@@ -2,298 +2,144 @@
 # -*- coding: utf-8 -*-
 """
 @Author : Sz
-@Project: jg_data_upload
-@File   : jg_tools.py
+@Project: rtg-tools
+@File   : hbase_tools.py
 @Time   : 2018/3/2 0002 10:47
 """
-import random
+import time
+from functools import wraps
+from typing import Union, List, Dict
 
 from thrift.protocol import TBinaryProtocol
 from thrift.transport import TSocket
 
-from hbase.thrift import THBaseService
-from hbase.thrift.ttypes import TTransport, TColumnValue, TGet, TPut, TDelete, TScan
+from hbase.hbase_client import THBaseService
+from hbase.hbase_client.ttypes import (
+    TTransport,
+    TColumnValue,
+    TGet,
+    TPut,
+    TDelete,
+    TScan,
+    TResult,
+)
+
+
+def retry(
+    max_retry: int = 5,
+    delay: Union[int, float] = 0,
+    sleep=time.sleep,
+    ignore_exception: bool = False,
+    verify: callable = None,
+):
+    def wrapper(func):
+        @wraps(func)
+        def _wrapper(*args, **kwargs):
+            nonlocal delay, max_retry
+            while max_retry > 0:
+                try:
+                    result = func(*args, **kwargs)
+                    if verify and not verify(result):
+                        if delay > 0:
+                            sleep(delay)
+                        continue
+
+                    return result
+
+                except Exception:
+                    if ignore_exception:
+                        if delay > 0:
+                            sleep(delay)
+                        continue
+                    else:
+                        raise
+                finally:
+                    max_retry -= 1
+
+        return _wrapper
+
+    return wrapper
 
 
 class HBaseClient(object):
-    """
-    hbase tools client
-    """
-
-    def __init__(self, hbase_address: str, hbase_port: int, hbase_servers: list = None):
-        """
-        :param hbase_address: hbase address
-        :param hbase_port: hbase port
-        :param hbase_servers: hbase server node list
-        """
-        self.address = hbase_address
-        self.port = hbase_port
-        self.servers = hbase_servers
-        self.reconnect()
-
-    def reconnect(self):
-        """
-        reconnect hbase
-        :return:
-        """
-        if self.servers:
-            h_a, h_p = random.choice(self.servers)
-            self.client = self.init_client(h_a, h_p)
-        else:
-            self.client = self.init_client(self.address, self.port)
-
-    def init_client(self, address: str, port: int):
-        """
-        init hbase client
-        :param address: hbase address
-        :param port: hbase port
-        :return: hbase client
-        """
-        for i in range(5):
-            try:
-                self.transport = TSocket.TSocket(address, port)
-                self.transport = TTransport.TBufferedTransport(self.transport)
-                protocol = TBinaryProtocol.TBinaryProtocol(self.transport)
-                self.transport.open()
-                self.client = THBaseService.Client(protocol)
-                return self.client
-            except BaseException as e:
-                if self.servers:
-                    address, port = random.choice(self.servers)
-                else:
-                    raise Exception
-        else:
-            raise Exception
-
-    def get_result(self, hbase_row: str, hbase_table: str) -> dict:
-        """
-        retrieve hbase data
-        :param hbase_row: rowkey
-        :param hbase_table: hbase table
-        :return: result
-        """
-        trash = 5
-        for i in range(trash):
-            try:
-                values = {}
-                get = TGet()
-                get.row = hbase_row.encode()
-                result = self.client.get(hbase_table.encode(), get)
-                for column in result.columnValues:
-                    values[column.qualifier.decode("utf-8")] = column.value.decode(
-                        "utf-8"
-                    )
-                return values
-            except Exception as e:
-                self.close()
-
-                if i != trash - 1:
-                    self.reconnect()
-                    continue
-                else:
-                    raise e
-
-    def put_result(
-            self,
-            hbase_row: str,
-            hbase_item: dict,
-            hbase_table: str,
-            column_name: str = "wa",
-    ) -> str:
-        """
-        create hbase data
-        :param hbase_row: rowkey
-        :param hbase_item: data
-        :param hbase_table: hbase table
-        :param column_name: column name
-        :return:
-        """
-        if type(column_name) == str:
-            column_name = column_name.encode(encoding="utf-8")
-        if type(column_name) != bytes:
-            raise Exception("Parameter error! column_name must is str or bytes")
-
-        trash = 5
-        for i in range(trash):
-            try:
-                coulumn_values = []
-                rowkey = hbase_row.encode(encoding="utf-8")
-                for key in hbase_item:
-                    column = key.encode(encoding="utf-8")
-                    value = str(hbase_item[key]).encode(encoding="utf-8")
-                    coulumn_value = TColumnValue(column_name, column, value)
-                    coulumn_values.append(coulumn_value)
-                tput = TPut(rowkey, coulumn_values)
-                self.client.put(hbase_table.encode(encoding="utf-8"), tput)
-                return "put success"
-            except Exception as e:
-                self.close()
-                if i != trash - 1:
-                    self.reconnect()
-                    continue
-                else:
-                    raise e
-
-    def delete_result(self, hbase_row: str, hbase_table: str):
-        """
-        delete hbase data
-        :param hbase_row: rowkey
-        :param hbase_table: hbase table
-        :return:
-        """
-        trash = 5
-        for i in range(trash):
-            try:
-                tdelete = TDelete(hbase_row.encode())
-                self.client.deleteSingle(hbase_table.encode(), tdelete)
-            except BaseException as e:
-                self.close()
-                if i != trash - 1:
-                    self.reconnect()
-                    continue
-                else:
-                    raise e
-
-    def exists(self, hbase_row: str, hbase_table: str) -> bool:
-        """
-        exists rowkey
-        :param hbase_row: rowkey
-        :param hbase_table: hbase table
-        :return:
-        """
-        trash = 5
-        for i in range(trash):
-            try:
-                get = TGet()
-                get.row = hbase_row.encode()
-                result = self.client.exists(hbase_table.encode(), get)
-                return result
-            except Exception as e:
-                self.close()
-                if i != trash - 1:
-                    self.reconnect()
-                    continue
-                else:
-                    raise e
-
-    def ping(self):
-        """
-        test hbase node
-        :return:
-        """
-        self.init_client(self.address, self.port)
-        try:
-            return self.transport.isOpen()
-        except BaseException as e:
-            return False
-
-    def scan_result(self, hbase_table: str, start_row: str = None) -> dict:
-        """
-        scan hbase table data
-        :param hbase_table: hbase table
-        :param start_row: start rowkey
-        :return:
-        """
-        tscan = TScan(startRow=start_row.encode() if start_row else None)
-        scan_id = self.client.openScanner(hbase_table.encode(), tscan)
-        row_list = self.client.getScannerRows(scan_id, 10)
-        while row_list:
-            for r in row_list:
-                dict_data = {}
-
-                for columnValue in r.columnValues:
-                    try:
-                        qualifier = columnValue.qualifier.decode()
-                        value = columnValue.value.decode()
-                        dict_data[qualifier] = value
-                    except Exception as e:
-                        print(e)
-                        continue
-                start_row = r.row.decode()
-                dict_data["rowkey"] = start_row
-                yield dict_data
-            try:
-                tscan = TScan(startRow=str(start_row).encode() if start_row else None)
-                scan_id = self.client.openScanner(str(hbase_table).encode(), tscan)
-                row_list = self.client.getScannerRows(scan_id, 1000)
-            except Exception as e:
-                self.close()
-                print(e)
-                self.reconnect()
-                tscan = TScan(startRow=str(start_row).encode() if start_row else None)
-                scan_id = self.client.openScanner(str(hbase_table).encode(), tscan)
-                row_list = self.client.getScannerRows(scan_id, 1000)
-
-    def close(self):
-        """Close the underyling transport to the hbase instance.
-
-        This method closes the underlying Thrift transport (TCP connection).
-        """
-        try:
-            if not self.transport.isOpen():
-                return
-            self.transport.close()
-            del self.transport
-        except BaseException as e:
-            return e
-
-
-class HBaseClient2(object):
-    THRIFT_TRANSPORTS = dict(
-        buffered=TTransport.TBufferedTransport,
-        framed=TTransport.TFramedTransport,
-    )
-
-    def __init__(self, host="localhost", port=9090, timeout=None):
-        socket = TSocket.TSocket(host=host, port=port)
-        self.transport = TTransport.TBufferedTransport(socket)
-        protocol = TBinaryProtocol.TBinaryProtocol(self.transport)
-        self.transport.open()
+    def __init__(self, hbase_host: str, hbase_port: int):
+        transport = TTransport.TBufferedTransport(
+            TSocket.TSocket(hbase_host, hbase_port)
+        )
+        protocol = TBinaryProtocol.TBinaryProtocol(transport)
+        transport.open()
+        self.transport = transport
         self.client = THBaseService.Client(protocol)
 
-    def ping(self, retry: int = 2):
-        if retry <= 0:
-            return False
-        elif self.transport.isOpen():
-            return True
-        else:
-            self.transport.open()
-            self.ping(retry - 1)
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
 
     def close(self):
         self.transport.close()
 
-    def h_get(self, table: str, row: str):
-        get = TGet()
-        get.row = row.encode()
-        result = self.client.get(table.encode(), get)
-        return {
-            column.qualifier.decode(): column.value.decode()
-            for column in result.columnValues
-        }
+    def ping(self):
+        return self.transport.isOpen()
 
-    def h_put(self, table: str, row: str, column_family: str, **data_items):
-        values = [
-            TColumnValue(
-                family=column_family.encode(),
-                qualifier=k.encode(),
-                value=str(v).encode(),
+    @staticmethod
+    def decode_row(row_data: TResult) -> dict:
+        row_value = {}
+        for column in row_data.columnValues:
+            cf, cq, cv = (
+                column.family.decode(),
+                column.qualifier.decode(),
+                column.value.decode(),
             )
-            for k, v in data_items.items()
-        ]
-        t_put = TPut(row.encode(), values)
+            if cf in row_value.keys():
+                row_value[cf][cq] = cv
+            else:
+                row_value[cf] = {cq: cv}
+        return row_value
+
+    @staticmethod
+    def encode_row(row_value: dict) -> List[TColumnValue]:
+        row_data = []
+        for column_family, column_data in row_value.items():
+            row_data.extend(
+                [
+                    TColumnValue(
+                        family=column_family.encode(),
+                        qualifier=k.encode(),
+                        value=str(v).encode(),
+                    )
+                    for k, v in column_data.items()
+                ]
+            )
+
+        return row_data
+
+    @retry(ignore_exception=True)
+    def get_row(self, table: str, rowkey: str) -> dict:
+        get = TGet()
+        get.row = rowkey.encode()
+        row_data = self.client.get(table.encode(), get)
+        return {"rowkey": rowkey, **self.decode_row(row_data)}
+
+    @retry(max_retry=3, delay=1, ignore_exception=True)
+    def put_row(self, table: str, rowkey: str, row_value: Dict) -> None:
+        t_put = TPut(rowkey.encode(), self.encode_row(row_value))
         self.client.put(table.encode(), t_put)
 
-    def h_del(self, table: str, row: str):
-        self.client.deleteSingle(table.encode(), TDelete(row.encode()))
+    def del_row(self, table: str, row: str, **kwargs):
+        self.client.deleteSingle(
+            table.encode(),
+            TDelete(row=row.encode(), **kwargs),
+        )
 
-    def h_scan(
-            self,
-            table: str,
-            start_at: str = None,
-            end_at: str = None,
-            chunk: int = 10,
-            **kwargs,
+    def scan_row(
+        self,
+        table: str,
+        start_at: str = None,
+        end_at: str = None,
+        chunk: int = 10,
+        **kwargs,
     ):
         if start_at:
             kwargs["startRow"] = start_at
@@ -307,27 +153,13 @@ class HBaseClient2(object):
         )
 
         scanner = self.client.openScanner(table.encode(), t_scan)
-        row_list = self.client.getScannerRows(scanner, chunk)
-        while row_list:
-            for r in row_list:
-                dict_data = {
-                    c.qualifier.decode(): c.value.decode() for c in r.columnValues
-                }
-                dict_data = {"rowkey": r.row.decode(), **dict_data}
-                yield dict_data
-            row_list = self.client.getScannerRows(scanner, chunk)
-
-
-class HBasePool(object):
-    def __init__(self):
-        pass
-
-    def __enter__(self):
-        pass
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        pass
+        row_generator = self.client.getScannerRows(scanner, chunk)
+        while row_generator:
+            for row_info in row_generator:
+                yield {"rowkey": row_info.row.decode(), **self.decode_row(row_info)}
+            row_generator = self.client.getScannerRows(scanner, chunk)
 
 
 if __name__ == "__main__":
-    pass
+    with HBaseClient("192.168.120.70", 9090) as hc:
+        pass

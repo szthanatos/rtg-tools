@@ -6,13 +6,13 @@
 #  options string: py
 #
 
+from thrift.Thrift import TType, TMessageType, TFrozenDict, TException, TApplicationException
+from thrift.protocol.TProtocol import TProtocolException
+from thrift.TRecursive import fix_spec
+
 import sys
 
-from thrift.TRecursive import fix_spec
-from thrift.Thrift import TType, TException
-from thrift.protocol.TProtocol import TProtocolException
 from thrift.transport import TTransport
-
 all_structs = []
 
 
@@ -270,13 +270,13 @@ class TTimeRange(object):
 
     """
 
-    def __init__(self, minStamp=None, maxStamp=None, ):
+
+    def __init__(self, minStamp=None, maxStamp=None,):
         self.minStamp = minStamp
         self.maxStamp = maxStamp
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -337,7 +337,7 @@ class TTimeRange(object):
 class TColumn(object):
     """
     Addresses a single cell or multiple cells
-    in a hbase table by column family and optionally
+    in a HBase table by column family and optionally
     a column qualifier and timestamp
 
     Attributes:
@@ -347,14 +347,14 @@ class TColumn(object):
 
     """
 
-    def __init__(self, family=None, qualifier=None, timestamp=None, ):
+
+    def __init__(self, family=None, qualifier=None, timestamp=None,):
         self.family = family
         self.qualifier = qualifier
         self.timestamp = timestamp
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -433,7 +433,8 @@ class TColumnValue(object):
 
     """
 
-    def __init__(self, family=None, qualifier=None, value=None, timestamp=None, tags=None, type=None, ):
+
+    def __init__(self, family=None, qualifier=None, value=None, timestamp=None, tags=None, type=None,):
         self.family = family
         self.qualifier = qualifier
         self.value = value
@@ -442,8 +443,7 @@ class TColumnValue(object):
         self.type = type
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -550,14 +550,14 @@ class TColumnIncrement(object):
 
     """
 
-    def __init__(self, family=None, qualifier=None, amount=1, ):
+
+    def __init__(self, family=None, qualifier=None, amount=1,):
         self.family = family
         self.qualifier = qualifier
         self.amount = amount
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -636,15 +636,15 @@ class TResult(object):
 
     """
 
-    def __init__(self, row=None, columnValues=None, stale=False, partial=False, ):
+
+    def __init__(self, row=None, columnValues=None, stale=False, partial=False,):
         self.row = row
         self.columnValues = columnValues
         self.stale = stale
         self.partial = partial
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -734,12 +734,12 @@ class TAuthorization(object):
 
     """
 
-    def __init__(self, labels=None, ):
+
+    def __init__(self, labels=None,):
         self.labels = labels
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -799,12 +799,12 @@ class TCellVisibility(object):
 
     """
 
-    def __init__(self, expression=None, ):
+
+    def __init__(self, expression=None,):
         self.expression = expression
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -814,8 +814,7 @@ class TCellVisibility(object):
                 break
             if fid == 1:
                 if ftype == TType.STRING:
-                    self.expression = iprot.readString().decode('utf-8') if sys.version_info[
-                                                                                0] == 2 else iprot.readString()
+                    self.expression = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             else:
@@ -883,9 +882,8 @@ class TGet(object):
 
     """
 
-    def __init__(self, row=None, columns=None, timestamp=None, timeRange=None, maxVersions=None, filterString=None,
-                 attributes=None, authorizations=None, consistency=None, targetReplicaId=None, cacheBlocks=None,
-                 storeLimit=None, storeOffset=None, existence_only=None, filterBytes=None, ):
+
+    def __init__(self, row=None, columns=None, timestamp=None, timeRange=None, maxVersions=None, filterString=None, attributes=None, authorizations=None, consistency=None, targetReplicaId=None, cacheBlocks=None, storeLimit=None, storeOffset=None, existence_only=None, filterBytes=None,):
         self.row = row
         self.columns = columns
         self.timestamp = timestamp
@@ -903,8 +901,7 @@ class TGet(object):
         self.filterBytes = filterBytes
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -1121,8 +1118,8 @@ class TPut(object):
 
     """
 
-    def __init__(self, row=None, columnValues=None, timestamp=None, attributes=None, durability=None,
-                 cellVisibility=None, ):
+
+    def __init__(self, row=None, columnValues=None, timestamp=None, attributes=None, durability=None, cellVisibility=None,):
         self.row = row
         self.columnValues = columnValues
         self.timestamp = timestamp
@@ -1131,8 +1128,7 @@ class TPut(object):
         self.cellVisibility = cellVisibility
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -1283,7 +1279,8 @@ class TDelete(object):
 
     """
 
-    def __init__(self, row=None, columns=None, timestamp=None, deleteType=1, attributes=None, durability=None, ):
+
+    def __init__(self, row=None, columns=None, timestamp=None, deleteType=1, attributes=None, durability=None,):
         self.row = row
         self.columns = columns
         self.timestamp = timestamp
@@ -1292,8 +1289,7 @@ class TDelete(object):
         self.durability = durability
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -1422,8 +1418,8 @@ class TIncrement(object):
 
     """
 
-    def __init__(self, row=None, columns=None, attributes=None, durability=None, cellVisibility=None,
-                 returnResults=None, ):
+
+    def __init__(self, row=None, columns=None, attributes=None, durability=None, cellVisibility=None, returnResults=None,):
         self.row = row
         self.columns = columns
         self.attributes = attributes
@@ -1432,8 +1428,7 @@ class TIncrement(object):
         self.returnResults = returnResults
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -1559,8 +1554,8 @@ class TAppend(object):
 
     """
 
-    def __init__(self, row=None, columns=None, attributes=None, durability=None, cellVisibility=None,
-                 returnResults=None, ):
+
+    def __init__(self, row=None, columns=None, attributes=None, durability=None, cellVisibility=None, returnResults=None,):
         self.row = row
         self.columns = columns
         self.attributes = attributes
@@ -1569,8 +1564,7 @@ class TAppend(object):
         self.returnResults = returnResults
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -1711,10 +1705,8 @@ class TScan(object):
 
     """
 
-    def __init__(self, startRow=None, stopRow=None, columns=None, caching=None, maxVersions=1, timeRange=None,
-                 filterString=None, batchSize=None, attributes=None, authorizations=None, reversed=None,
-                 cacheBlocks=None, colFamTimeRangeMap=None, readType=None, limit=None, consistency=None,
-                 targetReplicaId=None, filterBytes=None, ):
+
+    def __init__(self, startRow=None, stopRow=None, columns=None, caching=None, maxVersions=1, timeRange=None, filterString=None, batchSize=None, attributes=None, authorizations=None, reversed=None, cacheBlocks=None, colFamTimeRangeMap=None, readType=None, limit=None, consistency=None, targetReplicaId=None, filterBytes=None,):
         self.startRow = startRow
         self.stopRow = stopRow
         self.columns = columns
@@ -1735,8 +1727,7 @@ class TScan(object):
         self.filterBytes = filterBytes
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -1976,13 +1967,13 @@ class TMutation(object):
 
     """
 
-    def __init__(self, put=None, deleteSingle=None, ):
+
+    def __init__(self, put=None, deleteSingle=None,):
         self.put = put
         self.deleteSingle = deleteSingle
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -2048,13 +2039,13 @@ class TRowMutations(object):
 
     """
 
-    def __init__(self, row=None, mutations=None, ):
+
+    def __init__(self, row=None, mutations=None,):
         self.row = row
         self.mutations = mutations
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -2134,8 +2125,8 @@ class THRegionInfo(object):
 
     """
 
-    def __init__(self, regionId=None, tableName=None, startKey=None, endKey=None, offline=None, split=None,
-                 replicaId=None, ):
+
+    def __init__(self, regionId=None, tableName=None, startKey=None, endKey=None, offline=None, split=None, replicaId=None,):
         self.regionId = regionId
         self.tableName = tableName
         self.startKey = startKey
@@ -2145,8 +2136,7 @@ class THRegionInfo(object):
         self.replicaId = replicaId
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -2258,14 +2248,14 @@ class TServerName(object):
 
     """
 
-    def __init__(self, hostName=None, port=None, startCode=None, ):
+
+    def __init__(self, hostName=None, port=None, startCode=None,):
         self.hostName = hostName
         self.port = port
         self.startCode = startCode
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -2275,8 +2265,7 @@ class TServerName(object):
                 break
             if fid == 1:
                 if ftype == TType.STRING:
-                    self.hostName = iprot.readString().decode('utf-8') if sys.version_info[
-                                                                              0] == 2 else iprot.readString()
+                    self.hostName = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             elif fid == 2:
@@ -2339,13 +2328,13 @@ class THRegionLocation(object):
 
     """
 
-    def __init__(self, serverName=None, regionInfo=None, ):
+
+    def __init__(self, serverName=None, regionInfo=None,):
         self.serverName = serverName
         self.regionInfo = regionInfo
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -2416,13 +2405,13 @@ class TTableName(object):
 
     """
 
-    def __init__(self, ns=None, qualifier=None, ):
+
+    def __init__(self, ns=None, qualifier=None,):
         self.ns = ns
         self.qualifier = qualifier
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -2507,11 +2496,8 @@ class TColumnFamilyDescriptor(object):
 
     """
 
-    def __init__(self, name=None, attributes=None, configuration=None, blockSize=None, bloomnFilterType=None,
-                 compressionType=None, dfsReplication=None, dataBlockEncoding=None, keepDeletedCells=None,
-                 maxVersions=None, minVersions=None, scope=None, timeToLive=None, blockCacheEnabled=None,
-                 cacheBloomsOnWrite=None, cacheDataOnWrite=None, cacheIndexesOnWrite=None, compressTags=None,
-                 evictBlocksOnClose=None, inMemory=None, ):
+
+    def __init__(self, name=None, attributes=None, configuration=None, blockSize=None, bloomnFilterType=None, compressionType=None, dfsReplication=None, dataBlockEncoding=None, keepDeletedCells=None, maxVersions=None, minVersions=None, scope=None, timeToLive=None, blockCacheEnabled=None, cacheBloomsOnWrite=None, cacheDataOnWrite=None, cacheIndexesOnWrite=None, compressTags=None, evictBlocksOnClose=None, inMemory=None,):
         self.name = name
         self.attributes = attributes
         self.configuration = configuration
@@ -2534,8 +2520,7 @@ class TColumnFamilyDescriptor(object):
         self.inMemory = inMemory
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -2786,15 +2771,15 @@ class TTableDescriptor(object):
 
     """
 
-    def __init__(self, tableName=None, columns=None, attributes=None, durability=None, ):
+
+    def __init__(self, tableName=None, columns=None, attributes=None, durability=None,):
         self.tableName = tableName
         self.columns = columns
         self.attributes = attributes
         self.durability = durability
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -2899,13 +2884,13 @@ class TNamespaceDescriptor(object):
 
     """
 
-    def __init__(self, name=None, configuration=None, ):
+
+    def __init__(self, name=None, configuration=None,):
         self.name = name
         self.configuration = configuration
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -2974,20 +2959,20 @@ class TNamespaceDescriptor(object):
 class TIOError(TException):
     """
     A TIOError exception signals that an error occurred communicating
-    to the hbase master or a hbase region server. Also used to return
-    more general hbase error conditions.
+    to the HBase master or a HBase region server. Also used to return
+    more general HBase error conditions.
 
     Attributes:
      - message
 
     """
 
-    def __init__(self, message=None, ):
+
+    def __init__(self, message=None,):
         self.message = message
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -2997,8 +2982,7 @@ class TIOError(TException):
                 break
             if fid == 1:
                 if ftype == TType.STRING:
-                    self.message = iprot.readString().decode('utf-8') if sys.version_info[
-                                                                             0] == 2 else iprot.readString()
+                    self.message = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             else:
@@ -3046,12 +3030,12 @@ class TIllegalArgument(TException):
 
     """
 
-    def __init__(self, message=None, ):
+
+    def __init__(self, message=None,):
         self.message = message
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -3061,8 +3045,7 @@ class TIllegalArgument(TException):
                 break
             if fid == 1:
                 if ftype == TType.STRING:
-                    self.message = iprot.readString().decode('utf-8') if sys.version_info[
-                                                                             0] == 2 else iprot.readString()
+                    self.message = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             else:
@@ -3098,230 +3081,227 @@ class TIllegalArgument(TException):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(TTimeRange)
 TTimeRange.thrift_spec = (
     None,  # 0
-    (1, TType.I64, 'minStamp', None, None,),  # 1
-    (2, TType.I64, 'maxStamp', None, None,),  # 2
+    (1, TType.I64, 'minStamp', None, None, ),  # 1
+    (2, TType.I64, 'maxStamp', None, None, ),  # 2
 )
 all_structs.append(TColumn)
 TColumn.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'family', 'BINARY', None,),  # 1
-    (2, TType.STRING, 'qualifier', 'BINARY', None,),  # 2
-    (3, TType.I64, 'timestamp', None, None,),  # 3
+    (1, TType.STRING, 'family', 'BINARY', None, ),  # 1
+    (2, TType.STRING, 'qualifier', 'BINARY', None, ),  # 2
+    (3, TType.I64, 'timestamp', None, None, ),  # 3
 )
 all_structs.append(TColumnValue)
 TColumnValue.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'family', 'BINARY', None,),  # 1
-    (2, TType.STRING, 'qualifier', 'BINARY', None,),  # 2
-    (3, TType.STRING, 'value', 'BINARY', None,),  # 3
-    (4, TType.I64, 'timestamp', None, None,),  # 4
-    (5, TType.STRING, 'tags', 'BINARY', None,),  # 5
-    (6, TType.BYTE, 'type', None, None,),  # 6
+    (1, TType.STRING, 'family', 'BINARY', None, ),  # 1
+    (2, TType.STRING, 'qualifier', 'BINARY', None, ),  # 2
+    (3, TType.STRING, 'value', 'BINARY', None, ),  # 3
+    (4, TType.I64, 'timestamp', None, None, ),  # 4
+    (5, TType.STRING, 'tags', 'BINARY', None, ),  # 5
+    (6, TType.BYTE, 'type', None, None, ),  # 6
 )
 all_structs.append(TColumnIncrement)
 TColumnIncrement.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'family', 'BINARY', None,),  # 1
-    (2, TType.STRING, 'qualifier', 'BINARY', None,),  # 2
-    (3, TType.I64, 'amount', None, 1,),  # 3
+    (1, TType.STRING, 'family', 'BINARY', None, ),  # 1
+    (2, TType.STRING, 'qualifier', 'BINARY', None, ),  # 2
+    (3, TType.I64, 'amount', None, 1, ),  # 3
 )
 all_structs.append(TResult)
 TResult.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'row', 'BINARY', None,),  # 1
-    (2, TType.LIST, 'columnValues', (TType.STRUCT, [TColumnValue, None], False), None,),  # 2
-    (3, TType.BOOL, 'stale', None, False,),  # 3
-    (4, TType.BOOL, 'partial', None, False,),  # 4
+    (1, TType.STRING, 'row', 'BINARY', None, ),  # 1
+    (2, TType.LIST, 'columnValues', (TType.STRUCT, [TColumnValue, None], False), None, ),  # 2
+    (3, TType.BOOL, 'stale', None, False, ),  # 3
+    (4, TType.BOOL, 'partial', None, False, ),  # 4
 )
 all_structs.append(TAuthorization)
 TAuthorization.thrift_spec = (
     None,  # 0
-    (1, TType.LIST, 'labels', (TType.STRING, 'UTF8', False), None,),  # 1
+    (1, TType.LIST, 'labels', (TType.STRING, 'UTF8', False), None, ),  # 1
 )
 all_structs.append(TCellVisibility)
 TCellVisibility.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'expression', 'UTF8', None,),  # 1
+    (1, TType.STRING, 'expression', 'UTF8', None, ),  # 1
 )
 all_structs.append(TGet)
 TGet.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'row', 'BINARY', None,),  # 1
-    (2, TType.LIST, 'columns', (TType.STRUCT, [TColumn, None], False), None,),  # 2
-    (3, TType.I64, 'timestamp', None, None,),  # 3
-    (4, TType.STRUCT, 'timeRange', [TTimeRange, None], None,),  # 4
-    (5, TType.I32, 'maxVersions', None, None,),  # 5
-    (6, TType.STRING, 'filterString', 'BINARY', None,),  # 6
-    (7, TType.MAP, 'attributes', (TType.STRING, 'BINARY', TType.STRING, 'BINARY', False), None,),  # 7
-    (8, TType.STRUCT, 'authorizations', [TAuthorization, None], None,),  # 8
-    (9, TType.I32, 'consistency', None, None,),  # 9
-    (10, TType.I32, 'targetReplicaId', None, None,),  # 10
-    (11, TType.BOOL, 'cacheBlocks', None, None,),  # 11
-    (12, TType.I32, 'storeLimit', None, None,),  # 12
-    (13, TType.I32, 'storeOffset', None, None,),  # 13
-    (14, TType.BOOL, 'existence_only', None, None,),  # 14
-    (15, TType.STRING, 'filterBytes', 'BINARY', None,),  # 15
+    (1, TType.STRING, 'row', 'BINARY', None, ),  # 1
+    (2, TType.LIST, 'columns', (TType.STRUCT, [TColumn, None], False), None, ),  # 2
+    (3, TType.I64, 'timestamp', None, None, ),  # 3
+    (4, TType.STRUCT, 'timeRange', [TTimeRange, None], None, ),  # 4
+    (5, TType.I32, 'maxVersions', None, None, ),  # 5
+    (6, TType.STRING, 'filterString', 'BINARY', None, ),  # 6
+    (7, TType.MAP, 'attributes', (TType.STRING, 'BINARY', TType.STRING, 'BINARY', False), None, ),  # 7
+    (8, TType.STRUCT, 'authorizations', [TAuthorization, None], None, ),  # 8
+    (9, TType.I32, 'consistency', None, None, ),  # 9
+    (10, TType.I32, 'targetReplicaId', None, None, ),  # 10
+    (11, TType.BOOL, 'cacheBlocks', None, None, ),  # 11
+    (12, TType.I32, 'storeLimit', None, None, ),  # 12
+    (13, TType.I32, 'storeOffset', None, None, ),  # 13
+    (14, TType.BOOL, 'existence_only', None, None, ),  # 14
+    (15, TType.STRING, 'filterBytes', 'BINARY', None, ),  # 15
 )
 all_structs.append(TPut)
 TPut.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'row', 'BINARY', None,),  # 1
-    (2, TType.LIST, 'columnValues', (TType.STRUCT, [TColumnValue, None], False), None,),  # 2
-    (3, TType.I64, 'timestamp', None, None,),  # 3
+    (1, TType.STRING, 'row', 'BINARY', None, ),  # 1
+    (2, TType.LIST, 'columnValues', (TType.STRUCT, [TColumnValue, None], False), None, ),  # 2
+    (3, TType.I64, 'timestamp', None, None, ),  # 3
     None,  # 4
-    (5, TType.MAP, 'attributes', (TType.STRING, 'BINARY', TType.STRING, 'BINARY', False), None,),  # 5
-    (6, TType.I32, 'durability', None, None,),  # 6
-    (7, TType.STRUCT, 'cellVisibility', [TCellVisibility, None], None,),  # 7
+    (5, TType.MAP, 'attributes', (TType.STRING, 'BINARY', TType.STRING, 'BINARY', False), None, ),  # 5
+    (6, TType.I32, 'durability', None, None, ),  # 6
+    (7, TType.STRUCT, 'cellVisibility', [TCellVisibility, None], None, ),  # 7
 )
 all_structs.append(TDelete)
 TDelete.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'row', 'BINARY', None,),  # 1
-    (2, TType.LIST, 'columns', (TType.STRUCT, [TColumn, None], False), None,),  # 2
-    (3, TType.I64, 'timestamp', None, None,),  # 3
-    (4, TType.I32, 'deleteType', None, 1,),  # 4
+    (1, TType.STRING, 'row', 'BINARY', None, ),  # 1
+    (2, TType.LIST, 'columns', (TType.STRUCT, [TColumn, None], False), None, ),  # 2
+    (3, TType.I64, 'timestamp', None, None, ),  # 3
+    (4, TType.I32, 'deleteType', None, 1, ),  # 4
     None,  # 5
-    (6, TType.MAP, 'attributes', (TType.STRING, 'BINARY', TType.STRING, 'BINARY', False), None,),  # 6
-    (7, TType.I32, 'durability', None, None,),  # 7
+    (6, TType.MAP, 'attributes', (TType.STRING, 'BINARY', TType.STRING, 'BINARY', False), None, ),  # 6
+    (7, TType.I32, 'durability', None, None, ),  # 7
 )
 all_structs.append(TIncrement)
 TIncrement.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'row', 'BINARY', None,),  # 1
-    (2, TType.LIST, 'columns', (TType.STRUCT, [TColumnIncrement, None], False), None,),  # 2
+    (1, TType.STRING, 'row', 'BINARY', None, ),  # 1
+    (2, TType.LIST, 'columns', (TType.STRUCT, [TColumnIncrement, None], False), None, ),  # 2
     None,  # 3
-    (4, TType.MAP, 'attributes', (TType.STRING, 'BINARY', TType.STRING, 'BINARY', False), None,),  # 4
-    (5, TType.I32, 'durability', None, None,),  # 5
-    (6, TType.STRUCT, 'cellVisibility', [TCellVisibility, None], None,),  # 6
-    (7, TType.BOOL, 'returnResults', None, None,),  # 7
+    (4, TType.MAP, 'attributes', (TType.STRING, 'BINARY', TType.STRING, 'BINARY', False), None, ),  # 4
+    (5, TType.I32, 'durability', None, None, ),  # 5
+    (6, TType.STRUCT, 'cellVisibility', [TCellVisibility, None], None, ),  # 6
+    (7, TType.BOOL, 'returnResults', None, None, ),  # 7
 )
 all_structs.append(TAppend)
 TAppend.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'row', 'BINARY', None,),  # 1
-    (2, TType.LIST, 'columns', (TType.STRUCT, [TColumnValue, None], False), None,),  # 2
-    (3, TType.MAP, 'attributes', (TType.STRING, 'BINARY', TType.STRING, 'BINARY', False), None,),  # 3
-    (4, TType.I32, 'durability', None, None,),  # 4
-    (5, TType.STRUCT, 'cellVisibility', [TCellVisibility, None], None,),  # 5
-    (6, TType.BOOL, 'returnResults', None, None,),  # 6
+    (1, TType.STRING, 'row', 'BINARY', None, ),  # 1
+    (2, TType.LIST, 'columns', (TType.STRUCT, [TColumnValue, None], False), None, ),  # 2
+    (3, TType.MAP, 'attributes', (TType.STRING, 'BINARY', TType.STRING, 'BINARY', False), None, ),  # 3
+    (4, TType.I32, 'durability', None, None, ),  # 4
+    (5, TType.STRUCT, 'cellVisibility', [TCellVisibility, None], None, ),  # 5
+    (6, TType.BOOL, 'returnResults', None, None, ),  # 6
 )
 all_structs.append(TScan)
 TScan.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'startRow', 'BINARY', None,),  # 1
-    (2, TType.STRING, 'stopRow', 'BINARY', None,),  # 2
-    (3, TType.LIST, 'columns', (TType.STRUCT, [TColumn, None], False), None,),  # 3
-    (4, TType.I32, 'caching', None, None,),  # 4
-    (5, TType.I32, 'maxVersions', None, 1,),  # 5
-    (6, TType.STRUCT, 'timeRange', [TTimeRange, None], None,),  # 6
-    (7, TType.STRING, 'filterString', 'BINARY', None,),  # 7
-    (8, TType.I32, 'batchSize', None, None,),  # 8
-    (9, TType.MAP, 'attributes', (TType.STRING, 'BINARY', TType.STRING, 'BINARY', False), None,),  # 9
-    (10, TType.STRUCT, 'authorizations', [TAuthorization, None], None,),  # 10
-    (11, TType.BOOL, 'reversed', None, None,),  # 11
-    (12, TType.BOOL, 'cacheBlocks', None, None,),  # 12
-    (13, TType.MAP, 'colFamTimeRangeMap', (TType.STRING, 'BINARY', TType.STRUCT, [TTimeRange, None], False), None,),
-    # 13
-    (14, TType.I32, 'readType', None, None,),  # 14
-    (15, TType.I32, 'limit', None, None,),  # 15
-    (16, TType.I32, 'consistency', None, None,),  # 16
-    (17, TType.I32, 'targetReplicaId', None, None,),  # 17
-    (18, TType.STRING, 'filterBytes', 'BINARY', None,),  # 18
+    (1, TType.STRING, 'startRow', 'BINARY', None, ),  # 1
+    (2, TType.STRING, 'stopRow', 'BINARY', None, ),  # 2
+    (3, TType.LIST, 'columns', (TType.STRUCT, [TColumn, None], False), None, ),  # 3
+    (4, TType.I32, 'caching', None, None, ),  # 4
+    (5, TType.I32, 'maxVersions', None, 1, ),  # 5
+    (6, TType.STRUCT, 'timeRange', [TTimeRange, None], None, ),  # 6
+    (7, TType.STRING, 'filterString', 'BINARY', None, ),  # 7
+    (8, TType.I32, 'batchSize', None, None, ),  # 8
+    (9, TType.MAP, 'attributes', (TType.STRING, 'BINARY', TType.STRING, 'BINARY', False), None, ),  # 9
+    (10, TType.STRUCT, 'authorizations', [TAuthorization, None], None, ),  # 10
+    (11, TType.BOOL, 'reversed', None, None, ),  # 11
+    (12, TType.BOOL, 'cacheBlocks', None, None, ),  # 12
+    (13, TType.MAP, 'colFamTimeRangeMap', (TType.STRING, 'BINARY', TType.STRUCT, [TTimeRange, None], False), None, ),  # 13
+    (14, TType.I32, 'readType', None, None, ),  # 14
+    (15, TType.I32, 'limit', None, None, ),  # 15
+    (16, TType.I32, 'consistency', None, None, ),  # 16
+    (17, TType.I32, 'targetReplicaId', None, None, ),  # 17
+    (18, TType.STRING, 'filterBytes', 'BINARY', None, ),  # 18
 )
 all_structs.append(TMutation)
 TMutation.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'put', [TPut, None], None,),  # 1
-    (2, TType.STRUCT, 'deleteSingle', [TDelete, None], None,),  # 2
+    (1, TType.STRUCT, 'put', [TPut, None], None, ),  # 1
+    (2, TType.STRUCT, 'deleteSingle', [TDelete, None], None, ),  # 2
 )
 all_structs.append(TRowMutations)
 TRowMutations.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'row', 'BINARY', None,),  # 1
-    (2, TType.LIST, 'mutations', (TType.STRUCT, [TMutation, None], False), None,),  # 2
+    (1, TType.STRING, 'row', 'BINARY', None, ),  # 1
+    (2, TType.LIST, 'mutations', (TType.STRUCT, [TMutation, None], False), None, ),  # 2
 )
 all_structs.append(THRegionInfo)
 THRegionInfo.thrift_spec = (
     None,  # 0
-    (1, TType.I64, 'regionId', None, None,),  # 1
-    (2, TType.STRING, 'tableName', 'BINARY', None,),  # 2
-    (3, TType.STRING, 'startKey', 'BINARY', None,),  # 3
-    (4, TType.STRING, 'endKey', 'BINARY', None,),  # 4
-    (5, TType.BOOL, 'offline', None, None,),  # 5
-    (6, TType.BOOL, 'split', None, None,),  # 6
-    (7, TType.I32, 'replicaId', None, None,),  # 7
+    (1, TType.I64, 'regionId', None, None, ),  # 1
+    (2, TType.STRING, 'tableName', 'BINARY', None, ),  # 2
+    (3, TType.STRING, 'startKey', 'BINARY', None, ),  # 3
+    (4, TType.STRING, 'endKey', 'BINARY', None, ),  # 4
+    (5, TType.BOOL, 'offline', None, None, ),  # 5
+    (6, TType.BOOL, 'split', None, None, ),  # 6
+    (7, TType.I32, 'replicaId', None, None, ),  # 7
 )
 all_structs.append(TServerName)
 TServerName.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'hostName', 'UTF8', None,),  # 1
-    (2, TType.I32, 'port', None, None,),  # 2
-    (3, TType.I64, 'startCode', None, None,),  # 3
+    (1, TType.STRING, 'hostName', 'UTF8', None, ),  # 1
+    (2, TType.I32, 'port', None, None, ),  # 2
+    (3, TType.I64, 'startCode', None, None, ),  # 3
 )
 all_structs.append(THRegionLocation)
 THRegionLocation.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'serverName', [TServerName, None], None,),  # 1
-    (2, TType.STRUCT, 'regionInfo', [THRegionInfo, None], None,),  # 2
+    (1, TType.STRUCT, 'serverName', [TServerName, None], None, ),  # 1
+    (2, TType.STRUCT, 'regionInfo', [THRegionInfo, None], None, ),  # 2
 )
 all_structs.append(TTableName)
 TTableName.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'ns', 'BINARY', None,),  # 1
-    (2, TType.STRING, 'qualifier', 'BINARY', None,),  # 2
+    (1, TType.STRING, 'ns', 'BINARY', None, ),  # 1
+    (2, TType.STRING, 'qualifier', 'BINARY', None, ),  # 2
 )
 all_structs.append(TColumnFamilyDescriptor)
 TColumnFamilyDescriptor.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'name', 'BINARY', None,),  # 1
-    (2, TType.MAP, 'attributes', (TType.STRING, 'BINARY', TType.STRING, 'BINARY', False), None,),  # 2
-    (3, TType.MAP, 'configuration', (TType.STRING, 'UTF8', TType.STRING, 'UTF8', False), None,),  # 3
-    (4, TType.I32, 'blockSize', None, None,),  # 4
-    (5, TType.I32, 'bloomnFilterType', None, None,),  # 5
-    (6, TType.I32, 'compressionType', None, None,),  # 6
-    (7, TType.I16, 'dfsReplication', None, None,),  # 7
-    (8, TType.I32, 'dataBlockEncoding', None, None,),  # 8
-    (9, TType.I32, 'keepDeletedCells', None, None,),  # 9
-    (10, TType.I32, 'maxVersions', None, None,),  # 10
-    (11, TType.I32, 'minVersions', None, None,),  # 11
-    (12, TType.I32, 'scope', None, None,),  # 12
-    (13, TType.I32, 'timeToLive', None, None,),  # 13
-    (14, TType.BOOL, 'blockCacheEnabled', None, None,),  # 14
-    (15, TType.BOOL, 'cacheBloomsOnWrite', None, None,),  # 15
-    (16, TType.BOOL, 'cacheDataOnWrite', None, None,),  # 16
-    (17, TType.BOOL, 'cacheIndexesOnWrite', None, None,),  # 17
-    (18, TType.BOOL, 'compressTags', None, None,),  # 18
-    (19, TType.BOOL, 'evictBlocksOnClose', None, None,),  # 19
-    (20, TType.BOOL, 'inMemory', None, None,),  # 20
+    (1, TType.STRING, 'name', 'BINARY', None, ),  # 1
+    (2, TType.MAP, 'attributes', (TType.STRING, 'BINARY', TType.STRING, 'BINARY', False), None, ),  # 2
+    (3, TType.MAP, 'configuration', (TType.STRING, 'UTF8', TType.STRING, 'UTF8', False), None, ),  # 3
+    (4, TType.I32, 'blockSize', None, None, ),  # 4
+    (5, TType.I32, 'bloomnFilterType', None, None, ),  # 5
+    (6, TType.I32, 'compressionType', None, None, ),  # 6
+    (7, TType.I16, 'dfsReplication', None, None, ),  # 7
+    (8, TType.I32, 'dataBlockEncoding', None, None, ),  # 8
+    (9, TType.I32, 'keepDeletedCells', None, None, ),  # 9
+    (10, TType.I32, 'maxVersions', None, None, ),  # 10
+    (11, TType.I32, 'minVersions', None, None, ),  # 11
+    (12, TType.I32, 'scope', None, None, ),  # 12
+    (13, TType.I32, 'timeToLive', None, None, ),  # 13
+    (14, TType.BOOL, 'blockCacheEnabled', None, None, ),  # 14
+    (15, TType.BOOL, 'cacheBloomsOnWrite', None, None, ),  # 15
+    (16, TType.BOOL, 'cacheDataOnWrite', None, None, ),  # 16
+    (17, TType.BOOL, 'cacheIndexesOnWrite', None, None, ),  # 17
+    (18, TType.BOOL, 'compressTags', None, None, ),  # 18
+    (19, TType.BOOL, 'evictBlocksOnClose', None, None, ),  # 19
+    (20, TType.BOOL, 'inMemory', None, None, ),  # 20
 )
 all_structs.append(TTableDescriptor)
 TTableDescriptor.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'tableName', [TTableName, None], None,),  # 1
-    (2, TType.LIST, 'columns', (TType.STRUCT, [TColumnFamilyDescriptor, None], False), None,),  # 2
-    (3, TType.MAP, 'attributes', (TType.STRING, 'BINARY', TType.STRING, 'BINARY', False), None,),  # 3
-    (4, TType.I32, 'durability', None, None,),  # 4
+    (1, TType.STRUCT, 'tableName', [TTableName, None], None, ),  # 1
+    (2, TType.LIST, 'columns', (TType.STRUCT, [TColumnFamilyDescriptor, None], False), None, ),  # 2
+    (3, TType.MAP, 'attributes', (TType.STRING, 'BINARY', TType.STRING, 'BINARY', False), None, ),  # 3
+    (4, TType.I32, 'durability', None, None, ),  # 4
 )
 all_structs.append(TNamespaceDescriptor)
 TNamespaceDescriptor.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'name', 'UTF8', None,),  # 1
-    (2, TType.MAP, 'configuration', (TType.STRING, 'UTF8', TType.STRING, 'UTF8', False), None,),  # 2
+    (1, TType.STRING, 'name', 'UTF8', None, ),  # 1
+    (2, TType.MAP, 'configuration', (TType.STRING, 'UTF8', TType.STRING, 'UTF8', False), None, ),  # 2
 )
 all_structs.append(TIOError)
 TIOError.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'message', 'UTF8', None,),  # 1
+    (1, TType.STRING, 'message', 'UTF8', None, ),  # 1
 )
 all_structs.append(TIllegalArgument)
 TIllegalArgument.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'message', 'UTF8', None,),  # 1
+    (1, TType.STRING, 'message', 'UTF8', None, ),  # 1
 )
 fix_spec(all_structs)
 del all_structs

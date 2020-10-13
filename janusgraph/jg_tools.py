@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 @Author : Sz
-@Project: jg_data_upload
+@Project: rtg-tools
 @File   : jg_tools.py
 @Time   : 2020/8/26 0026 22:47
 """
@@ -33,12 +33,12 @@ class JGClient(object):
         self.connection.close()
 
     def is_vertex_exist(
-            self,
-            vertex_id: Union[int, str, Vertex] = None,
-            label: str = None,
-            first: bool = True,
-            *args,
-            **kwargs,
+        self,
+        vertex_id: Union[int, str, Vertex] = None,
+        label: str = None,
+        first: bool = True,
+        *args,
+        **kwargs,
     ) -> Union[None, Vertex, List[Vertex]]:
         """
         判断顶点是否存在，
@@ -112,7 +112,7 @@ class JGClient(object):
         return new_vertex.next()
 
     def update_vertex(
-            self, vertex_id: Union[int, str, Vertex], replace: bool = False, **kwargs
+        self, vertex_id: Union[int, str, Vertex], replace: bool = False, **kwargs
     ) -> Optional[Vertex]:
         """
         根据id更新顶点属性，
@@ -149,14 +149,14 @@ class JGClient(object):
         return vertex_id
 
     def is_edge_exist(
-            self,
-            edge_id: Union[str, Edge] = None,
-            vertex_out: Union[int, str, Vertex] = None,
-            vertex_in: Union[int, str, Vertex] = None,
-            label: str = None,
-            first: bool = True,
-            *args,
-            **kwargs,
+        self,
+        edge_id: Union[str, Edge] = None,
+        vertex_out: Union[int, str, Vertex] = None,
+        vertex_in: Union[int, str, Vertex] = None,
+        label: str = None,
+        first: bool = True,
+        *args,
+        **kwargs,
     ) -> Union[None, Edge, List[Edge]]:
         """
         判断关系是否存在。
@@ -182,10 +182,10 @@ class JGClient(object):
         elif vertex_out and vertex_in:
             exist_e = (
                 self.graph.V(vertex_out)
-                    .outE()
-                    .as_("e")
-                    .where(__.inV().where(__.hasId(vertex_in)))
-                    .select("e")
+                .outE()
+                .as_("e")
+                .where(__.inV().where(__.hasId(vertex_in)))
+                .select("e")
             )
         elif vertex_out:
             exist_e = self.graph.V(vertex_out).outE()
@@ -233,11 +233,11 @@ class JGClient(object):
         return edge_self
 
     def add_edge(
-            self,
-            label: str,
-            vertex_out: Union[int, str, Vertex],
-            vertex_in: Union[int, str, Vertex],
-            **kwargs,
+        self,
+        label: str,
+        vertex_out: Union[int, str, Vertex],
+        vertex_in: Union[int, str, Vertex],
+        **kwargs,
     ) -> Optional[Edge]:
         """
         创建关系，
@@ -251,12 +251,12 @@ class JGClient(object):
         """
         new_edge = (
             self.graph.V(vertex_out)
-                .as_("vo")
-                .V(vertex_in)
-                .as_("vi")
-                .addE(label)
-                .from_("vo")
-                .to("vi")
+            .as_("vo")
+            .V(vertex_in)
+            .as_("vi")
+            .addE(label)
+            .from_("vo")
+            .to("vi")
         )
         for _k, _v in kwargs.items():
             new_edge.property(_k, _v)
@@ -264,7 +264,7 @@ class JGClient(object):
         return new_edge.next()
 
     def update_edge(
-            self, edge_id: Union[str, Edge], replace: bool = False, **kwargs
+        self, edge_id: Union[str, Edge], replace: bool = False, **kwargs
     ) -> Optional[Edge]:
         """
         根据id更新关系属性，
@@ -300,10 +300,10 @@ class JGClient(object):
         self.graph.E(edge_id).drop().iterate()
         return edge_id
 
-    def Vertex(self, vertex_id: Union[str, Vertex]):  # noqa
+    def graph_vertex(self, vertex_id: Union[str, Vertex]):
         return self.graph.V(vertex_id)
 
-    def Edge(self, edge_id: Union[str, Edge]):  # noqa
+    def graph_edge(self, edge_id: Union[str, Edge]):
         return self.graph.E(edge_id)
 
 

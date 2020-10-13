@@ -6,12 +6,15 @@
 #  options string: py
 #
 
+from thrift.Thrift import TType, TMessageType, TFrozenDict, TException, TApplicationException
+from thrift.protocol.TProtocol import TProtocolException
+from thrift.TRecursive import fix_spec
+
+import sys
 import logging
-
-from thrift.Thrift import TProcessor
-
 from .ttypes import *
-
+from thrift.Thrift import TProcessor
+from thrift.transport import TTransport
 all_structs = []
 
 
@@ -1386,8 +1389,7 @@ class Client(Iface):
             return result.success
         if result.io is not None:
             raise result.io
-        raise TApplicationException(TApplicationException.MISSING_RESULT,
-                                    "getAllRegionLocations failed: unknown result")
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllRegionLocations failed: unknown result")
 
     def checkAndMutate(self, table, row, family, qualifier, compareOp, value, rowMutations):
         """
@@ -1593,8 +1595,7 @@ class Client(Iface):
             return result.success
         if result.io is not None:
             raise result.io
-        raise TApplicationException(TApplicationException.MISSING_RESULT,
-                                    "getTableDescriptorsByPattern failed: unknown result")
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "getTableDescriptorsByPattern failed: unknown result")
 
     def getTableDescriptorsByNamespace(self, name):
         """
@@ -1632,8 +1633,7 @@ class Client(Iface):
             return result.success
         if result.io is not None:
             raise result.io
-        raise TApplicationException(TApplicationException.MISSING_RESULT,
-                                    "getTableDescriptorsByNamespace failed: unknown result")
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "getTableDescriptorsByNamespace failed: unknown result")
 
     def getTableNamesByPattern(self, regex, includeSysTables):
         """
@@ -1673,8 +1673,7 @@ class Client(Iface):
             return result.success
         if result.io is not None:
             raise result.io
-        raise TApplicationException(TApplicationException.MISSING_RESULT,
-                                    "getTableNamesByPattern failed: unknown result")
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "getTableNamesByPattern failed: unknown result")
 
     def getTableNamesByNamespace(self, name):
         """
@@ -1712,8 +1711,7 @@ class Client(Iface):
             return result.success
         if result.io is not None:
             raise result.io
-        raise TApplicationException(TApplicationException.MISSING_RESULT,
-                                    "getTableNamesByNamespace failed: unknown result")
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "getTableNamesByNamespace failed: unknown result")
 
     def createTable(self, desc, splitKeys):
         """
@@ -2055,8 +2053,7 @@ class Client(Iface):
             return result.success
         if result.io is not None:
             raise result.io
-        raise TApplicationException(TApplicationException.MISSING_RESULT,
-                                    "isTableAvailableWithSplit failed: unknown result")
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "isTableAvailableWithSplit failed: unknown result")
 
     def addColumnFamily(self, tableName, column):
         """
@@ -2349,8 +2346,7 @@ class Client(Iface):
             return result.success
         if result.io is not None:
             raise result.io
-        raise TApplicationException(TApplicationException.MISSING_RESULT,
-                                    "getNamespaceDescriptor failed: unknown result")
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "getNamespaceDescriptor failed: unknown result")
 
     def listNamespaceDescriptors(self):
         """
@@ -2383,8 +2379,7 @@ class Client(Iface):
             return result.success
         if result.io is not None:
             raise result.io
-        raise TApplicationException(TApplicationException.MISSING_RESULT,
-                                    "listNamespaceDescriptors failed: unknown result")
+        raise TApplicationException(TApplicationException.MISSING_RESULT, "listNamespaceDescriptors failed: unknown result")
 
 
 class Processor(Iface, TProcessor):
@@ -2594,8 +2589,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = checkAndPut_result()
         try:
-            result.success = self._handler.checkAndPut(args.table, args.row, args.family, args.qualifier, args.value,
-                                                       args.tput)
+            result.success = self._handler.checkAndPut(args.table, args.row, args.family, args.qualifier, args.value, args.tput)
             msg_type = TMessageType.REPLY
         except TTransport.TTransportException:
             raise
@@ -2699,8 +2693,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = checkAndDelete_result()
         try:
-            result.success = self._handler.checkAndDelete(args.table, args.row, args.family, args.qualifier, args.value,
-                                                          args.tdelete)
+            result.success = self._handler.checkAndDelete(args.table, args.row, args.family, args.qualifier, args.value, args.tdelete)
             msg_type = TMessageType.REPLY
         except TTransport.TTransportException:
             raise
@@ -2966,8 +2959,7 @@ class Processor(Iface, TProcessor):
         iprot.readMessageEnd()
         result = checkAndMutate_result()
         try:
-            result.success = self._handler.checkAndMutate(args.table, args.row, args.family, args.qualifier,
-                                                          args.compareOp, args.value, args.rowMutations)
+            result.success = self._handler.checkAndMutate(args.table, args.row, args.family, args.qualifier, args.compareOp, args.value, args.rowMutations)
             msg_type = TMessageType.REPLY
         except TTransport.TTransportException:
             raise
@@ -3637,7 +3629,6 @@ class Processor(Iface, TProcessor):
         oprot.writeMessageEnd()
         oprot.trans.flush()
 
-
 # HELPER FUNCTIONS AND STRUCTURES
 
 
@@ -3649,13 +3640,13 @@ class exists_args(object):
 
     """
 
-    def __init__(self, table=None, tget=None, ):
+
+    def __init__(self, table=None, tget=None,):
         self.table = table
         self.tget = tget
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -3712,13 +3703,11 @@ class exists_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(exists_args)
 exists_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'table', 'BINARY', None,),  # 1
-    (2, TType.STRUCT, 'tget', [TGet, None], None,),  # 2
+    (1, TType.STRING, 'table', 'BINARY', None, ),  # 1
+    (2, TType.STRUCT, 'tget', [TGet, None], None, ),  # 2
 )
 
 
@@ -3730,13 +3719,13 @@ class exists_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -3789,12 +3778,10 @@ class exists_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(exists_result)
 exists_result.thrift_spec = (
-    (0, TType.BOOL, 'success', None, None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.BOOL, 'success', None, None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -3806,13 +3793,13 @@ class existsAll_args(object):
 
     """
 
-    def __init__(self, table=None, tgets=None, ):
+
+    def __init__(self, table=None, tgets=None,):
         self.table = table
         self.tgets = tgets
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -3877,13 +3864,11 @@ class existsAll_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(existsAll_args)
 existsAll_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'table', 'BINARY', None,),  # 1
-    (2, TType.LIST, 'tgets', (TType.STRUCT, [TGet, None], False), None,),  # 2
+    (1, TType.STRING, 'table', 'BINARY', None, ),  # 1
+    (2, TType.LIST, 'tgets', (TType.STRUCT, [TGet, None], False), None, ),  # 2
 )
 
 
@@ -3895,13 +3880,13 @@ class existsAll_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -3962,12 +3947,10 @@ class existsAll_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(existsAll_result)
 existsAll_result.thrift_spec = (
-    (0, TType.LIST, 'success', (TType.BOOL, None, False), None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.LIST, 'success', (TType.BOOL, None, False), None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -3979,13 +3962,13 @@ class get_args(object):
 
     """
 
-    def __init__(self, table=None, tget=None, ):
+
+    def __init__(self, table=None, tget=None,):
         self.table = table
         self.tget = tget
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -4042,13 +4025,11 @@ class get_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(get_args)
 get_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'table', 'BINARY', None,),  # 1
-    (2, TType.STRUCT, 'tget', [TGet, None], None,),  # 2
+    (1, TType.STRING, 'table', 'BINARY', None, ),  # 1
+    (2, TType.STRUCT, 'tget', [TGet, None], None, ),  # 2
 )
 
 
@@ -4060,13 +4041,13 @@ class get_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -4120,12 +4101,10 @@ class get_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(get_result)
 get_result.thrift_spec = (
-    (0, TType.STRUCT, 'success', [TResult, None], None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.STRUCT, 'success', [TResult, None], None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -4139,13 +4118,13 @@ class getMultiple_args(object):
 
     """
 
-    def __init__(self, table=None, tgets=None, ):
+
+    def __init__(self, table=None, tgets=None,):
         self.table = table
         self.tgets = tgets
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -4210,13 +4189,11 @@ class getMultiple_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getMultiple_args)
 getMultiple_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'table', 'BINARY', None,),  # 1
-    (2, TType.LIST, 'tgets', (TType.STRUCT, [TGet, None], False), None,),  # 2
+    (1, TType.STRING, 'table', 'BINARY', None, ),  # 1
+    (2, TType.LIST, 'tgets', (TType.STRUCT, [TGet, None], False), None, ),  # 2
 )
 
 
@@ -4228,13 +4205,13 @@ class getMultiple_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -4296,12 +4273,10 @@ class getMultiple_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getMultiple_result)
 getMultiple_result.thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT, [TResult, None], False), None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.LIST, 'success', (TType.STRUCT, [TResult, None], False), None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -4313,13 +4288,13 @@ class put_args(object):
 
     """
 
-    def __init__(self, table=None, tput=None, ):
+
+    def __init__(self, table=None, tput=None,):
         self.table = table
         self.tput = tput
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -4376,13 +4351,11 @@ class put_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(put_args)
 put_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'table', 'BINARY', None,),  # 1
-    (2, TType.STRUCT, 'tput', [TPut, None], None,),  # 2
+    (1, TType.STRING, 'table', 'BINARY', None, ),  # 1
+    (2, TType.STRUCT, 'tput', [TPut, None], None, ),  # 2
 )
 
 
@@ -4393,12 +4366,12 @@ class put_result(object):
 
     """
 
-    def __init__(self, io=None, ):
+
+    def __init__(self, io=None,):
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -4442,12 +4415,10 @@ class put_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(put_result)
 put_result.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -4465,7 +4436,8 @@ class checkAndPut_args(object):
 
     """
 
-    def __init__(self, table=None, row=None, family=None, qualifier=None, value=None, tput=None, ):
+
+    def __init__(self, table=None, row=None, family=None, qualifier=None, value=None, tput=None,):
         self.table = table
         self.row = row
         self.family = family
@@ -4474,8 +4446,7 @@ class checkAndPut_args(object):
         self.tput = tput
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -4574,17 +4545,15 @@ class checkAndPut_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(checkAndPut_args)
 checkAndPut_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'table', 'BINARY', None,),  # 1
-    (2, TType.STRING, 'row', 'BINARY', None,),  # 2
-    (3, TType.STRING, 'family', 'BINARY', None,),  # 3
-    (4, TType.STRING, 'qualifier', 'BINARY', None,),  # 4
-    (5, TType.STRING, 'value', 'BINARY', None,),  # 5
-    (6, TType.STRUCT, 'tput', [TPut, None], None,),  # 6
+    (1, TType.STRING, 'table', 'BINARY', None, ),  # 1
+    (2, TType.STRING, 'row', 'BINARY', None, ),  # 2
+    (3, TType.STRING, 'family', 'BINARY', None, ),  # 3
+    (4, TType.STRING, 'qualifier', 'BINARY', None, ),  # 4
+    (5, TType.STRING, 'value', 'BINARY', None, ),  # 5
+    (6, TType.STRUCT, 'tput', [TPut, None], None, ),  # 6
 )
 
 
@@ -4596,13 +4565,13 @@ class checkAndPut_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -4655,12 +4624,10 @@ class checkAndPut_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(checkAndPut_result)
 checkAndPut_result.thrift_spec = (
-    (0, TType.BOOL, 'success', None, None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.BOOL, 'success', None, None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -4672,13 +4639,13 @@ class putMultiple_args(object):
 
     """
 
-    def __init__(self, table=None, tputs=None, ):
+
+    def __init__(self, table=None, tputs=None,):
         self.table = table
         self.tputs = tputs
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -4743,13 +4710,11 @@ class putMultiple_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(putMultiple_args)
 putMultiple_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'table', 'BINARY', None,),  # 1
-    (2, TType.LIST, 'tputs', (TType.STRUCT, [TPut, None], False), None,),  # 2
+    (1, TType.STRING, 'table', 'BINARY', None, ),  # 1
+    (2, TType.LIST, 'tputs', (TType.STRUCT, [TPut, None], False), None, ),  # 2
 )
 
 
@@ -4760,12 +4725,12 @@ class putMultiple_result(object):
 
     """
 
-    def __init__(self, io=None, ):
+
+    def __init__(self, io=None,):
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -4809,12 +4774,10 @@ class putMultiple_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(putMultiple_result)
 putMultiple_result.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -4826,13 +4789,13 @@ class deleteSingle_args(object):
 
     """
 
-    def __init__(self, table=None, tdelete=None, ):
+
+    def __init__(self, table=None, tdelete=None,):
         self.table = table
         self.tdelete = tdelete
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -4889,13 +4852,11 @@ class deleteSingle_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(deleteSingle_args)
 deleteSingle_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'table', 'BINARY', None,),  # 1
-    (2, TType.STRUCT, 'tdelete', [TDelete, None], None,),  # 2
+    (1, TType.STRING, 'table', 'BINARY', None, ),  # 1
+    (2, TType.STRUCT, 'tdelete', [TDelete, None], None, ),  # 2
 )
 
 
@@ -4906,12 +4867,12 @@ class deleteSingle_result(object):
 
     """
 
-    def __init__(self, io=None, ):
+
+    def __init__(self, io=None,):
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -4955,12 +4916,10 @@ class deleteSingle_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(deleteSingle_result)
 deleteSingle_result.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -4972,13 +4931,13 @@ class deleteMultiple_args(object):
 
     """
 
-    def __init__(self, table=None, tdeletes=None, ):
+
+    def __init__(self, table=None, tdeletes=None,):
         self.table = table
         self.tdeletes = tdeletes
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -5043,13 +5002,11 @@ class deleteMultiple_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(deleteMultiple_args)
 deleteMultiple_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'table', 'BINARY', None,),  # 1
-    (2, TType.LIST, 'tdeletes', (TType.STRUCT, [TDelete, None], False), None,),  # 2
+    (1, TType.STRING, 'table', 'BINARY', None, ),  # 1
+    (2, TType.LIST, 'tdeletes', (TType.STRUCT, [TDelete, None], False), None, ),  # 2
 )
 
 
@@ -5061,13 +5018,13 @@ class deleteMultiple_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -5129,12 +5086,10 @@ class deleteMultiple_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(deleteMultiple_result)
 deleteMultiple_result.thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT, [TDelete, None], False), None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.LIST, 'success', (TType.STRUCT, [TDelete, None], False), None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -5152,7 +5107,8 @@ class checkAndDelete_args(object):
 
     """
 
-    def __init__(self, table=None, row=None, family=None, qualifier=None, value=None, tdelete=None, ):
+
+    def __init__(self, table=None, row=None, family=None, qualifier=None, value=None, tdelete=None,):
         self.table = table
         self.row = row
         self.family = family
@@ -5161,8 +5117,7 @@ class checkAndDelete_args(object):
         self.tdelete = tdelete
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -5261,17 +5216,15 @@ class checkAndDelete_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(checkAndDelete_args)
 checkAndDelete_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'table', 'BINARY', None,),  # 1
-    (2, TType.STRING, 'row', 'BINARY', None,),  # 2
-    (3, TType.STRING, 'family', 'BINARY', None,),  # 3
-    (4, TType.STRING, 'qualifier', 'BINARY', None,),  # 4
-    (5, TType.STRING, 'value', 'BINARY', None,),  # 5
-    (6, TType.STRUCT, 'tdelete', [TDelete, None], None,),  # 6
+    (1, TType.STRING, 'table', 'BINARY', None, ),  # 1
+    (2, TType.STRING, 'row', 'BINARY', None, ),  # 2
+    (3, TType.STRING, 'family', 'BINARY', None, ),  # 3
+    (4, TType.STRING, 'qualifier', 'BINARY', None, ),  # 4
+    (5, TType.STRING, 'value', 'BINARY', None, ),  # 5
+    (6, TType.STRUCT, 'tdelete', [TDelete, None], None, ),  # 6
 )
 
 
@@ -5283,13 +5236,13 @@ class checkAndDelete_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -5342,12 +5295,10 @@ class checkAndDelete_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(checkAndDelete_result)
 checkAndDelete_result.thrift_spec = (
-    (0, TType.BOOL, 'success', None, None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.BOOL, 'success', None, None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -5359,13 +5310,13 @@ class increment_args(object):
 
     """
 
-    def __init__(self, table=None, tincrement=None, ):
+
+    def __init__(self, table=None, tincrement=None,):
         self.table = table
         self.tincrement = tincrement
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -5422,13 +5373,11 @@ class increment_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(increment_args)
 increment_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'table', 'BINARY', None,),  # 1
-    (2, TType.STRUCT, 'tincrement', [TIncrement, None], None,),  # 2
+    (1, TType.STRING, 'table', 'BINARY', None, ),  # 1
+    (2, TType.STRUCT, 'tincrement', [TIncrement, None], None, ),  # 2
 )
 
 
@@ -5440,13 +5389,13 @@ class increment_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -5500,12 +5449,10 @@ class increment_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(increment_result)
 increment_result.thrift_spec = (
-    (0, TType.STRUCT, 'success', [TResult, None], None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.STRUCT, 'success', [TResult, None], None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -5517,13 +5464,13 @@ class append_args(object):
 
     """
 
-    def __init__(self, table=None, tappend=None, ):
+
+    def __init__(self, table=None, tappend=None,):
         self.table = table
         self.tappend = tappend
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -5580,13 +5527,11 @@ class append_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(append_args)
 append_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'table', 'BINARY', None,),  # 1
-    (2, TType.STRUCT, 'tappend', [TAppend, None], None,),  # 2
+    (1, TType.STRING, 'table', 'BINARY', None, ),  # 1
+    (2, TType.STRUCT, 'tappend', [TAppend, None], None, ),  # 2
 )
 
 
@@ -5598,13 +5543,13 @@ class append_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -5658,12 +5603,10 @@ class append_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(append_result)
 append_result.thrift_spec = (
-    (0, TType.STRUCT, 'success', [TResult, None], None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.STRUCT, 'success', [TResult, None], None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -5675,13 +5618,13 @@ class openScanner_args(object):
 
     """
 
-    def __init__(self, table=None, tscan=None, ):
+
+    def __init__(self, table=None, tscan=None,):
         self.table = table
         self.tscan = tscan
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -5738,13 +5681,11 @@ class openScanner_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(openScanner_args)
 openScanner_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'table', 'BINARY', None,),  # 1
-    (2, TType.STRUCT, 'tscan', [TScan, None], None,),  # 2
+    (1, TType.STRING, 'table', 'BINARY', None, ),  # 1
+    (2, TType.STRUCT, 'tscan', [TScan, None], None, ),  # 2
 )
 
 
@@ -5756,13 +5697,13 @@ class openScanner_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -5815,12 +5756,10 @@ class openScanner_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(openScanner_result)
 openScanner_result.thrift_spec = (
-    (0, TType.I32, 'success', None, None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.I32, 'success', None, None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -5832,13 +5771,13 @@ class getScannerRows_args(object):
 
     """
 
-    def __init__(self, scannerId=None, numRows=1, ):
+
+    def __init__(self, scannerId=None, numRows=1,):
         self.scannerId = scannerId
         self.numRows = numRows
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -5892,13 +5831,11 @@ class getScannerRows_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getScannerRows_args)
 getScannerRows_args.thrift_spec = (
     None,  # 0
-    (1, TType.I32, 'scannerId', None, None,),  # 1
-    (2, TType.I32, 'numRows', None, 1,),  # 2
+    (1, TType.I32, 'scannerId', None, None, ),  # 1
+    (2, TType.I32, 'numRows', None, 1, ),  # 2
 )
 
 
@@ -5911,14 +5848,14 @@ class getScannerRows_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ia=None, ):
+
+    def __init__(self, success=None, io=None, ia=None,):
         self.success = success
         self.io = io
         self.ia = ia
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -5990,13 +5927,11 @@ class getScannerRows_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getScannerRows_result)
 getScannerRows_result.thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT, [TResult, None], False), None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
-    (2, TType.STRUCT, 'ia', [TIllegalArgument, None], None,),  # 2
+    (0, TType.LIST, 'success', (TType.STRUCT, [TResult, None], False), None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
+    (2, TType.STRUCT, 'ia', [TIllegalArgument, None], None, ),  # 2
 )
 
 
@@ -6007,12 +5942,12 @@ class closeScanner_args(object):
 
     """
 
-    def __init__(self, scannerId=None, ):
+
+    def __init__(self, scannerId=None,):
         self.scannerId = scannerId
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -6057,12 +5992,10 @@ class closeScanner_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(closeScanner_args)
 closeScanner_args.thrift_spec = (
     None,  # 0
-    (1, TType.I32, 'scannerId', None, None,),  # 1
+    (1, TType.I32, 'scannerId', None, None, ),  # 1
 )
 
 
@@ -6074,13 +6007,13 @@ class closeScanner_result(object):
 
     """
 
-    def __init__(self, io=None, ia=None, ):
+
+    def __init__(self, io=None, ia=None,):
         self.io = io
         self.ia = ia
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -6134,13 +6067,11 @@ class closeScanner_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(closeScanner_result)
 closeScanner_result.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
-    (2, TType.STRUCT, 'ia', [TIllegalArgument, None], None,),  # 2
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
+    (2, TType.STRUCT, 'ia', [TIllegalArgument, None], None, ),  # 2
 )
 
 
@@ -6152,13 +6083,13 @@ class mutateRow_args(object):
 
     """
 
-    def __init__(self, table=None, trowMutations=None, ):
+
+    def __init__(self, table=None, trowMutations=None,):
         self.table = table
         self.trowMutations = trowMutations
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -6215,13 +6146,11 @@ class mutateRow_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(mutateRow_args)
 mutateRow_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'table', 'BINARY', None,),  # 1
-    (2, TType.STRUCT, 'trowMutations', [TRowMutations, None], None,),  # 2
+    (1, TType.STRING, 'table', 'BINARY', None, ),  # 1
+    (2, TType.STRUCT, 'trowMutations', [TRowMutations, None], None, ),  # 2
 )
 
 
@@ -6232,12 +6161,12 @@ class mutateRow_result(object):
 
     """
 
-    def __init__(self, io=None, ):
+
+    def __init__(self, io=None,):
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -6281,12 +6210,10 @@ class mutateRow_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(mutateRow_result)
 mutateRow_result.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -6299,14 +6226,14 @@ class getScannerResults_args(object):
 
     """
 
-    def __init__(self, table=None, tscan=None, numRows=1, ):
+
+    def __init__(self, table=None, tscan=None, numRows=1,):
         self.table = table
         self.tscan = tscan
         self.numRows = numRows
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -6372,14 +6299,12 @@ class getScannerResults_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getScannerResults_args)
 getScannerResults_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'table', 'BINARY', None,),  # 1
-    (2, TType.STRUCT, 'tscan', [TScan, None], None,),  # 2
-    (3, TType.I32, 'numRows', None, 1,),  # 3
+    (1, TType.STRING, 'table', 'BINARY', None, ),  # 1
+    (2, TType.STRUCT, 'tscan', [TScan, None], None, ),  # 2
+    (3, TType.I32, 'numRows', None, 1, ),  # 3
 )
 
 
@@ -6391,13 +6316,13 @@ class getScannerResults_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -6459,12 +6384,10 @@ class getScannerResults_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getScannerResults_result)
 getScannerResults_result.thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT, [TResult, None], False), None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.LIST, 'success', (TType.STRUCT, [TResult, None], False), None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -6477,14 +6400,14 @@ class getRegionLocation_args(object):
 
     """
 
-    def __init__(self, table=None, row=None, reload=None, ):
+
+    def __init__(self, table=None, row=None, reload=None,):
         self.table = table
         self.row = row
         self.reload = reload
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -6549,14 +6472,12 @@ class getRegionLocation_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getRegionLocation_args)
 getRegionLocation_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'table', 'BINARY', None,),  # 1
-    (2, TType.STRING, 'row', 'BINARY', None,),  # 2
-    (3, TType.BOOL, 'reload', None, None,),  # 3
+    (1, TType.STRING, 'table', 'BINARY', None, ),  # 1
+    (2, TType.STRING, 'row', 'BINARY', None, ),  # 2
+    (3, TType.BOOL, 'reload', None, None, ),  # 3
 )
 
 
@@ -6568,13 +6489,13 @@ class getRegionLocation_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -6628,12 +6549,10 @@ class getRegionLocation_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getRegionLocation_result)
 getRegionLocation_result.thrift_spec = (
-    (0, TType.STRUCT, 'success', [THRegionLocation, None], None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.STRUCT, 'success', [THRegionLocation, None], None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -6644,12 +6563,12 @@ class getAllRegionLocations_args(object):
 
     """
 
-    def __init__(self, table=None, ):
+
+    def __init__(self, table=None,):
         self.table = table
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -6694,12 +6613,10 @@ class getAllRegionLocations_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getAllRegionLocations_args)
 getAllRegionLocations_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'table', 'BINARY', None,),  # 1
+    (1, TType.STRING, 'table', 'BINARY', None, ),  # 1
 )
 
 
@@ -6711,13 +6628,13 @@ class getAllRegionLocations_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -6779,12 +6696,10 @@ class getAllRegionLocations_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getAllRegionLocations_result)
 getAllRegionLocations_result.thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT, [THRegionLocation, None], False), None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.LIST, 'success', (TType.STRUCT, [THRegionLocation, None], False), None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -6802,8 +6717,8 @@ class checkAndMutate_args(object):
 
     """
 
-    def __init__(self, table=None, row=None, family=None, qualifier=None, compareOp=None, value=None,
-                 rowMutations=None, ):
+
+    def __init__(self, table=None, row=None, family=None, qualifier=None, compareOp=None, value=None, rowMutations=None,):
         self.table = table
         self.row = row
         self.family = family
@@ -6813,8 +6728,7 @@ class checkAndMutate_args(object):
         self.rowMutations = rowMutations
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -6924,18 +6838,16 @@ class checkAndMutate_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(checkAndMutate_args)
 checkAndMutate_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'table', 'BINARY', None,),  # 1
-    (2, TType.STRING, 'row', 'BINARY', None,),  # 2
-    (3, TType.STRING, 'family', 'BINARY', None,),  # 3
-    (4, TType.STRING, 'qualifier', 'BINARY', None,),  # 4
-    (5, TType.I32, 'compareOp', None, None,),  # 5
-    (6, TType.STRING, 'value', 'BINARY', None,),  # 6
-    (7, TType.STRUCT, 'rowMutations', [TRowMutations, None], None,),  # 7
+    (1, TType.STRING, 'table', 'BINARY', None, ),  # 1
+    (2, TType.STRING, 'row', 'BINARY', None, ),  # 2
+    (3, TType.STRING, 'family', 'BINARY', None, ),  # 3
+    (4, TType.STRING, 'qualifier', 'BINARY', None, ),  # 4
+    (5, TType.I32, 'compareOp', None, None, ),  # 5
+    (6, TType.STRING, 'value', 'BINARY', None, ),  # 6
+    (7, TType.STRUCT, 'rowMutations', [TRowMutations, None], None, ),  # 7
 )
 
 
@@ -6947,13 +6859,13 @@ class checkAndMutate_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -7006,12 +6918,10 @@ class checkAndMutate_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(checkAndMutate_result)
 checkAndMutate_result.thrift_spec = (
-    (0, TType.BOOL, 'success', None, None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.BOOL, 'success', None, None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -7022,12 +6932,12 @@ class getTableDescriptor_args(object):
 
     """
 
-    def __init__(self, table=None, ):
+
+    def __init__(self, table=None,):
         self.table = table
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -7073,12 +6983,10 @@ class getTableDescriptor_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getTableDescriptor_args)
 getTableDescriptor_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'table', [TTableName, None], None,),  # 1
+    (1, TType.STRUCT, 'table', [TTableName, None], None, ),  # 1
 )
 
 
@@ -7090,13 +6998,13 @@ class getTableDescriptor_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -7150,12 +7058,10 @@ class getTableDescriptor_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getTableDescriptor_result)
 getTableDescriptor_result.thrift_spec = (
-    (0, TType.STRUCT, 'success', [TTableDescriptor, None], None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.STRUCT, 'success', [TTableDescriptor, None], None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -7166,12 +7072,12 @@ class getTableDescriptors_args(object):
 
     """
 
-    def __init__(self, tables=None, ):
+
+    def __init__(self, tables=None,):
         self.tables = tables
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -7225,12 +7131,10 @@ class getTableDescriptors_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getTableDescriptors_args)
 getTableDescriptors_args.thrift_spec = (
     None,  # 0
-    (1, TType.LIST, 'tables', (TType.STRUCT, [TTableName, None], False), None,),  # 1
+    (1, TType.LIST, 'tables', (TType.STRUCT, [TTableName, None], False), None, ),  # 1
 )
 
 
@@ -7242,13 +7146,13 @@ class getTableDescriptors_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -7310,12 +7214,10 @@ class getTableDescriptors_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getTableDescriptors_result)
 getTableDescriptors_result.thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT, [TTableDescriptor, None], False), None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.LIST, 'success', (TType.STRUCT, [TTableDescriptor, None], False), None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -7326,12 +7228,12 @@ class tableExists_args(object):
 
     """
 
-    def __init__(self, tableName=None, ):
+
+    def __init__(self, tableName=None,):
         self.tableName = tableName
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -7375,12 +7277,10 @@ class tableExists_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(tableExists_args)
 tableExists_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'tableName', [TTableName, None], None,),  # 1
+    (1, TType.STRUCT, 'tableName', [TTableName, None], None, ),  # 1
 )
 
 
@@ -7392,13 +7292,13 @@ class tableExists_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -7451,12 +7351,10 @@ class tableExists_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(tableExists_result)
 tableExists_result.thrift_spec = (
-    (0, TType.BOOL, 'success', None, None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.BOOL, 'success', None, None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -7468,13 +7366,13 @@ class getTableDescriptorsByPattern_args(object):
 
     """
 
-    def __init__(self, regex=None, includeSysTables=None, ):
+
+    def __init__(self, regex=None, includeSysTables=None,):
         self.regex = regex
         self.includeSysTables = includeSysTables
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -7528,13 +7426,11 @@ class getTableDescriptorsByPattern_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getTableDescriptorsByPattern_args)
 getTableDescriptorsByPattern_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'regex', 'UTF8', None,),  # 1
-    (2, TType.BOOL, 'includeSysTables', None, None,),  # 2
+    (1, TType.STRING, 'regex', 'UTF8', None, ),  # 1
+    (2, TType.BOOL, 'includeSysTables', None, None, ),  # 2
 )
 
 
@@ -7546,13 +7442,13 @@ class getTableDescriptorsByPattern_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -7614,12 +7510,10 @@ class getTableDescriptorsByPattern_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getTableDescriptorsByPattern_result)
 getTableDescriptorsByPattern_result.thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT, [TTableDescriptor, None], False), None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.LIST, 'success', (TType.STRUCT, [TTableDescriptor, None], False), None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -7630,12 +7524,12 @@ class getTableDescriptorsByNamespace_args(object):
 
     """
 
-    def __init__(self, name=None, ):
+
+    def __init__(self, name=None,):
         self.name = name
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -7680,12 +7574,10 @@ class getTableDescriptorsByNamespace_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getTableDescriptorsByNamespace_args)
 getTableDescriptorsByNamespace_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'name', 'UTF8', None,),  # 1
+    (1, TType.STRING, 'name', 'UTF8', None, ),  # 1
 )
 
 
@@ -7697,13 +7589,13 @@ class getTableDescriptorsByNamespace_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -7765,12 +7657,10 @@ class getTableDescriptorsByNamespace_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getTableDescriptorsByNamespace_result)
 getTableDescriptorsByNamespace_result.thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT, [TTableDescriptor, None], False), None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.LIST, 'success', (TType.STRUCT, [TTableDescriptor, None], False), None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -7782,13 +7672,13 @@ class getTableNamesByPattern_args(object):
 
     """
 
-    def __init__(self, regex=None, includeSysTables=None, ):
+
+    def __init__(self, regex=None, includeSysTables=None,):
         self.regex = regex
         self.includeSysTables = includeSysTables
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -7842,13 +7732,11 @@ class getTableNamesByPattern_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getTableNamesByPattern_args)
 getTableNamesByPattern_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'regex', 'UTF8', None,),  # 1
-    (2, TType.BOOL, 'includeSysTables', None, None,),  # 2
+    (1, TType.STRING, 'regex', 'UTF8', None, ),  # 1
+    (2, TType.BOOL, 'includeSysTables', None, None, ),  # 2
 )
 
 
@@ -7860,13 +7748,13 @@ class getTableNamesByPattern_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -7928,12 +7816,10 @@ class getTableNamesByPattern_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getTableNamesByPattern_result)
 getTableNamesByPattern_result.thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT, [TTableName, None], False), None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.LIST, 'success', (TType.STRUCT, [TTableName, None], False), None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -7944,12 +7830,12 @@ class getTableNamesByNamespace_args(object):
 
     """
 
-    def __init__(self, name=None, ):
+
+    def __init__(self, name=None,):
         self.name = name
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -7994,12 +7880,10 @@ class getTableNamesByNamespace_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getTableNamesByNamespace_args)
 getTableNamesByNamespace_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'name', 'UTF8', None,),  # 1
+    (1, TType.STRING, 'name', 'UTF8', None, ),  # 1
 )
 
 
@@ -8011,13 +7895,13 @@ class getTableNamesByNamespace_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -8079,12 +7963,10 @@ class getTableNamesByNamespace_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getTableNamesByNamespace_result)
 getTableNamesByNamespace_result.thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT, [TTableName, None], False), None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.LIST, 'success', (TType.STRUCT, [TTableName, None], False), None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -8096,13 +7978,13 @@ class createTable_args(object):
 
     """
 
-    def __init__(self, desc=None, splitKeys=None, ):
+
+    def __init__(self, desc=None, splitKeys=None,):
         self.desc = desc
         self.splitKeys = splitKeys
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -8165,13 +8047,11 @@ class createTable_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(createTable_args)
 createTable_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'desc', [TTableDescriptor, None], None,),  # 1
-    (2, TType.LIST, 'splitKeys', (TType.STRING, 'BINARY', False), None,),  # 2
+    (1, TType.STRUCT, 'desc', [TTableDescriptor, None], None, ),  # 1
+    (2, TType.LIST, 'splitKeys', (TType.STRING, 'BINARY', False), None, ),  # 2
 )
 
 
@@ -8182,12 +8062,12 @@ class createTable_result(object):
 
     """
 
-    def __init__(self, io=None, ):
+
+    def __init__(self, io=None,):
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -8231,12 +8111,10 @@ class createTable_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(createTable_result)
 createTable_result.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -8247,12 +8125,12 @@ class deleteTable_args(object):
 
     """
 
-    def __init__(self, tableName=None, ):
+
+    def __init__(self, tableName=None,):
         self.tableName = tableName
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -8298,12 +8176,10 @@ class deleteTable_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(deleteTable_args)
 deleteTable_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'tableName', [TTableName, None], None,),  # 1
+    (1, TType.STRUCT, 'tableName', [TTableName, None], None, ),  # 1
 )
 
 
@@ -8314,12 +8190,12 @@ class deleteTable_result(object):
 
     """
 
-    def __init__(self, io=None, ):
+
+    def __init__(self, io=None,):
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -8363,12 +8239,10 @@ class deleteTable_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(deleteTable_result)
 deleteTable_result.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -8380,13 +8254,13 @@ class truncateTable_args(object):
 
     """
 
-    def __init__(self, tableName=None, preserveSplits=None, ):
+
+    def __init__(self, tableName=None, preserveSplits=None,):
         self.tableName = tableName
         self.preserveSplits = preserveSplits
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -8443,13 +8317,11 @@ class truncateTable_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(truncateTable_args)
 truncateTable_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'tableName', [TTableName, None], None,),  # 1
-    (2, TType.BOOL, 'preserveSplits', None, None,),  # 2
+    (1, TType.STRUCT, 'tableName', [TTableName, None], None, ),  # 1
+    (2, TType.BOOL, 'preserveSplits', None, None, ),  # 2
 )
 
 
@@ -8460,12 +8332,12 @@ class truncateTable_result(object):
 
     """
 
-    def __init__(self, io=None, ):
+
+    def __init__(self, io=None,):
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -8509,12 +8381,10 @@ class truncateTable_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(truncateTable_result)
 truncateTable_result.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -8525,12 +8395,12 @@ class enableTable_args(object):
 
     """
 
-    def __init__(self, tableName=None, ):
+
+    def __init__(self, tableName=None,):
         self.tableName = tableName
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -8576,12 +8446,10 @@ class enableTable_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(enableTable_args)
 enableTable_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'tableName', [TTableName, None], None,),  # 1
+    (1, TType.STRUCT, 'tableName', [TTableName, None], None, ),  # 1
 )
 
 
@@ -8592,12 +8460,12 @@ class enableTable_result(object):
 
     """
 
-    def __init__(self, io=None, ):
+
+    def __init__(self, io=None,):
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -8641,12 +8509,10 @@ class enableTable_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(enableTable_result)
 enableTable_result.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -8657,12 +8523,12 @@ class disableTable_args(object):
 
     """
 
-    def __init__(self, tableName=None, ):
+
+    def __init__(self, tableName=None,):
         self.tableName = tableName
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -8708,12 +8574,10 @@ class disableTable_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(disableTable_args)
 disableTable_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'tableName', [TTableName, None], None,),  # 1
+    (1, TType.STRUCT, 'tableName', [TTableName, None], None, ),  # 1
 )
 
 
@@ -8724,12 +8588,12 @@ class disableTable_result(object):
 
     """
 
-    def __init__(self, io=None, ):
+
+    def __init__(self, io=None,):
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -8773,12 +8637,10 @@ class disableTable_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(disableTable_result)
 disableTable_result.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -8789,12 +8651,12 @@ class isTableEnabled_args(object):
 
     """
 
-    def __init__(self, tableName=None, ):
+
+    def __init__(self, tableName=None,):
         self.tableName = tableName
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -8840,12 +8702,10 @@ class isTableEnabled_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(isTableEnabled_args)
 isTableEnabled_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'tableName', [TTableName, None], None,),  # 1
+    (1, TType.STRUCT, 'tableName', [TTableName, None], None, ),  # 1
 )
 
 
@@ -8857,13 +8717,13 @@ class isTableEnabled_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -8916,12 +8776,10 @@ class isTableEnabled_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(isTableEnabled_result)
 isTableEnabled_result.thrift_spec = (
-    (0, TType.BOOL, 'success', None, None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.BOOL, 'success', None, None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -8932,12 +8790,12 @@ class isTableDisabled_args(object):
 
     """
 
-    def __init__(self, tableName=None, ):
+
+    def __init__(self, tableName=None,):
         self.tableName = tableName
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -8983,12 +8841,10 @@ class isTableDisabled_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(isTableDisabled_args)
 isTableDisabled_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'tableName', [TTableName, None], None,),  # 1
+    (1, TType.STRUCT, 'tableName', [TTableName, None], None, ),  # 1
 )
 
 
@@ -9000,13 +8856,13 @@ class isTableDisabled_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -9059,12 +8915,10 @@ class isTableDisabled_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(isTableDisabled_result)
 isTableDisabled_result.thrift_spec = (
-    (0, TType.BOOL, 'success', None, None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.BOOL, 'success', None, None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -9075,12 +8929,12 @@ class isTableAvailable_args(object):
 
     """
 
-    def __init__(self, tableName=None, ):
+
+    def __init__(self, tableName=None,):
         self.tableName = tableName
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -9126,12 +8980,10 @@ class isTableAvailable_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(isTableAvailable_args)
 isTableAvailable_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'tableName', [TTableName, None], None,),  # 1
+    (1, TType.STRUCT, 'tableName', [TTableName, None], None, ),  # 1
 )
 
 
@@ -9143,13 +8995,13 @@ class isTableAvailable_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -9202,12 +9054,10 @@ class isTableAvailable_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(isTableAvailable_result)
 isTableAvailable_result.thrift_spec = (
-    (0, TType.BOOL, 'success', None, None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.BOOL, 'success', None, None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -9219,13 +9069,13 @@ class isTableAvailableWithSplit_args(object):
 
     """
 
-    def __init__(self, tableName=None, splitKeys=None, ):
+
+    def __init__(self, tableName=None, splitKeys=None,):
         self.tableName = tableName
         self.splitKeys = splitKeys
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -9288,13 +9138,11 @@ class isTableAvailableWithSplit_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(isTableAvailableWithSplit_args)
 isTableAvailableWithSplit_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'tableName', [TTableName, None], None,),  # 1
-    (2, TType.LIST, 'splitKeys', (TType.STRING, 'BINARY', False), None,),  # 2
+    (1, TType.STRUCT, 'tableName', [TTableName, None], None, ),  # 1
+    (2, TType.LIST, 'splitKeys', (TType.STRING, 'BINARY', False), None, ),  # 2
 )
 
 
@@ -9306,13 +9154,13 @@ class isTableAvailableWithSplit_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -9365,12 +9213,10 @@ class isTableAvailableWithSplit_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(isTableAvailableWithSplit_result)
 isTableAvailableWithSplit_result.thrift_spec = (
-    (0, TType.BOOL, 'success', None, None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.BOOL, 'success', None, None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -9382,13 +9228,13 @@ class addColumnFamily_args(object):
 
     """
 
-    def __init__(self, tableName=None, column=None, ):
+
+    def __init__(self, tableName=None, column=None,):
         self.tableName = tableName
         self.column = column
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -9446,13 +9292,11 @@ class addColumnFamily_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(addColumnFamily_args)
 addColumnFamily_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'tableName', [TTableName, None], None,),  # 1
-    (2, TType.STRUCT, 'column', [TColumnFamilyDescriptor, None], None,),  # 2
+    (1, TType.STRUCT, 'tableName', [TTableName, None], None, ),  # 1
+    (2, TType.STRUCT, 'column', [TColumnFamilyDescriptor, None], None, ),  # 2
 )
 
 
@@ -9463,12 +9307,12 @@ class addColumnFamily_result(object):
 
     """
 
-    def __init__(self, io=None, ):
+
+    def __init__(self, io=None,):
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -9512,12 +9356,10 @@ class addColumnFamily_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(addColumnFamily_result)
 addColumnFamily_result.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -9529,13 +9371,13 @@ class deleteColumnFamily_args(object):
 
     """
 
-    def __init__(self, tableName=None, column=None, ):
+
+    def __init__(self, tableName=None, column=None,):
         self.tableName = tableName
         self.column = column
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -9592,13 +9434,11 @@ class deleteColumnFamily_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(deleteColumnFamily_args)
 deleteColumnFamily_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'tableName', [TTableName, None], None,),  # 1
-    (2, TType.STRING, 'column', 'BINARY', None,),  # 2
+    (1, TType.STRUCT, 'tableName', [TTableName, None], None, ),  # 1
+    (2, TType.STRING, 'column', 'BINARY', None, ),  # 2
 )
 
 
@@ -9609,12 +9449,12 @@ class deleteColumnFamily_result(object):
 
     """
 
-    def __init__(self, io=None, ):
+
+    def __init__(self, io=None,):
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -9658,12 +9498,10 @@ class deleteColumnFamily_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(deleteColumnFamily_result)
 deleteColumnFamily_result.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -9675,13 +9513,13 @@ class modifyColumnFamily_args(object):
 
     """
 
-    def __init__(self, tableName=None, column=None, ):
+
+    def __init__(self, tableName=None, column=None,):
         self.tableName = tableName
         self.column = column
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -9739,13 +9577,11 @@ class modifyColumnFamily_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(modifyColumnFamily_args)
 modifyColumnFamily_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'tableName', [TTableName, None], None,),  # 1
-    (2, TType.STRUCT, 'column', [TColumnFamilyDescriptor, None], None,),  # 2
+    (1, TType.STRUCT, 'tableName', [TTableName, None], None, ),  # 1
+    (2, TType.STRUCT, 'column', [TColumnFamilyDescriptor, None], None, ),  # 2
 )
 
 
@@ -9756,12 +9592,12 @@ class modifyColumnFamily_result(object):
 
     """
 
-    def __init__(self, io=None, ):
+
+    def __init__(self, io=None,):
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -9805,12 +9641,10 @@ class modifyColumnFamily_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(modifyColumnFamily_result)
 modifyColumnFamily_result.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -9821,12 +9655,12 @@ class modifyTable_args(object):
 
     """
 
-    def __init__(self, desc=None, ):
+
+    def __init__(self, desc=None,):
         self.desc = desc
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -9872,12 +9706,10 @@ class modifyTable_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(modifyTable_args)
 modifyTable_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'desc', [TTableDescriptor, None], None,),  # 1
+    (1, TType.STRUCT, 'desc', [TTableDescriptor, None], None, ),  # 1
 )
 
 
@@ -9888,12 +9720,12 @@ class modifyTable_result(object):
 
     """
 
-    def __init__(self, io=None, ):
+
+    def __init__(self, io=None,):
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -9937,12 +9769,10 @@ class modifyTable_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(modifyTable_result)
 modifyTable_result.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -9953,12 +9783,12 @@ class createNamespace_args(object):
 
     """
 
-    def __init__(self, namespaceDesc=None, ):
+
+    def __init__(self, namespaceDesc=None,):
         self.namespaceDesc = namespaceDesc
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -10004,12 +9834,10 @@ class createNamespace_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(createNamespace_args)
 createNamespace_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'namespaceDesc', [TNamespaceDescriptor, None], None,),  # 1
+    (1, TType.STRUCT, 'namespaceDesc', [TNamespaceDescriptor, None], None, ),  # 1
 )
 
 
@@ -10020,12 +9848,12 @@ class createNamespace_result(object):
 
     """
 
-    def __init__(self, io=None, ):
+
+    def __init__(self, io=None,):
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -10069,12 +9897,10 @@ class createNamespace_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(createNamespace_result)
 createNamespace_result.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -10085,12 +9911,12 @@ class modifyNamespace_args(object):
 
     """
 
-    def __init__(self, namespaceDesc=None, ):
+
+    def __init__(self, namespaceDesc=None,):
         self.namespaceDesc = namespaceDesc
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -10136,12 +9962,10 @@ class modifyNamespace_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(modifyNamespace_args)
 modifyNamespace_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'namespaceDesc', [TNamespaceDescriptor, None], None,),  # 1
+    (1, TType.STRUCT, 'namespaceDesc', [TNamespaceDescriptor, None], None, ),  # 1
 )
 
 
@@ -10152,12 +9976,12 @@ class modifyNamespace_result(object):
 
     """
 
-    def __init__(self, io=None, ):
+
+    def __init__(self, io=None,):
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -10201,12 +10025,10 @@ class modifyNamespace_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(modifyNamespace_result)
 modifyNamespace_result.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -10217,12 +10039,12 @@ class deleteNamespace_args(object):
 
     """
 
-    def __init__(self, name=None, ):
+
+    def __init__(self, name=None,):
         self.name = name
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -10267,12 +10089,10 @@ class deleteNamespace_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(deleteNamespace_args)
 deleteNamespace_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'name', 'UTF8', None,),  # 1
+    (1, TType.STRING, 'name', 'UTF8', None, ),  # 1
 )
 
 
@@ -10283,12 +10103,12 @@ class deleteNamespace_result(object):
 
     """
 
-    def __init__(self, io=None, ):
+
+    def __init__(self, io=None,):
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -10332,12 +10152,10 @@ class deleteNamespace_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(deleteNamespace_result)
 deleteNamespace_result.thrift_spec = (
     None,  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
@@ -10348,12 +10166,12 @@ class getNamespaceDescriptor_args(object):
 
     """
 
-    def __init__(self, name=None, ):
+
+    def __init__(self, name=None,):
         self.name = name
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -10398,12 +10216,10 @@ class getNamespaceDescriptor_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getNamespaceDescriptor_args)
 getNamespaceDescriptor_args.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'name', 'UTF8', None,),  # 1
+    (1, TType.STRING, 'name', 'UTF8', None, ),  # 1
 )
 
 
@@ -10415,13 +10231,13 @@ class getNamespaceDescriptor_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -10475,20 +10291,18 @@ class getNamespaceDescriptor_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(getNamespaceDescriptor_result)
 getNamespaceDescriptor_result.thrift_spec = (
-    (0, TType.STRUCT, 'success', [TNamespaceDescriptor, None], None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.STRUCT, 'success', [TNamespaceDescriptor, None], None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 
 
 class listNamespaceDescriptors_args(object):
 
+
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -10522,8 +10336,6 @@ class listNamespaceDescriptors_args(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(listNamespaceDescriptors_args)
 listNamespaceDescriptors_args.thrift_spec = (
 )
@@ -10537,13 +10349,13 @@ class listNamespaceDescriptors_result(object):
 
     """
 
-    def __init__(self, success=None, io=None, ):
+
+    def __init__(self, success=None, io=None,):
         self.success = success
         self.io = io
 
     def read(self, iprot):
-        if iprot._fast_decode is not None and isinstance(iprot.trans,
-                                                         TTransport.CReadableTransport) and self.thrift_spec is not None:
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
             iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
             return
         iprot.readStructBegin()
@@ -10605,12 +10417,11 @@ class listNamespaceDescriptors_result(object):
 
     def __ne__(self, other):
         return not (self == other)
-
-
 all_structs.append(listNamespaceDescriptors_result)
 listNamespaceDescriptors_result.thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT, [TNamespaceDescriptor, None], False), None,),  # 0
-    (1, TType.STRUCT, 'io', [TIOError, None], None,),  # 1
+    (0, TType.LIST, 'success', (TType.STRUCT, [TNamespaceDescriptor, None], False), None, ),  # 0
+    (1, TType.STRUCT, 'io', [TIOError, None], None, ),  # 1
 )
 fix_spec(all_structs)
 del all_structs
+

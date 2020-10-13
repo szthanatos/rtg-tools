@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 @Author : Sz
-@File   : customer_tools.py
 @Project: rtg-tools
+@File   : customer_tools.py
 @Time   : 2018/8/20 0020 10:42
 """
 import time
@@ -17,7 +17,7 @@ from confluent_kafka.cimpl import (
 )
 
 
-class CKConsumer(object):
+class KConsumer(object):
     """
     在confluent-kafka-python的consumer之上抽象出来的工具
     """
@@ -193,7 +193,7 @@ if __name__ == "__main__":
         print("-----------")
 
 
-    with CKConsumer(
+    with KConsumer(
             kafka_server="test_kafka",
             group_id="test_group",
             client_id="test_client",

@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 """
 @Author : Sz
-@File   : producer_tools.py
 @Project: rtg-tools
+@File   : producer_tools.py
 @Time   : 2018/8/20 0020 10:42
 """
 from confluent_kafka.cimpl import Producer
 
 
-class CKProducer(object):
+class KProducer(object):
     """
     在confluent-kafka-python的producer之上抽象出来的工具
     """
@@ -67,6 +67,6 @@ if __name__ == "__main__":
     test_msg = ("test_msg| " * 20)[:100]
     cycle_time = 100000
 
-    with CKProducer(kafka_server="test_kafka", client_id="test_client") as p:
+    with KProducer(kafka_server="test_kafka", client_id="test_client") as p:
         [p.send_msg("test_topic", test_msg) for _ in range(cycle_time)]
     pass
