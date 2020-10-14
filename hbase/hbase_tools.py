@@ -157,6 +157,19 @@ class HBaseClient(object):
         return row_data
 
     @retry(ignore_exception=True)
+    def is_row_exist(self, table: str, row_key: str) -> bool:
+        """
+        验证 table 中是否存在 key 为 row_key 的 row，
+
+        :param table:
+        :param row_key:
+        :return:
+        """
+        get = TGet()
+        get.row = row_key.encode()
+        return self.client.exists(table.encode(), get)
+
+    @retry(ignore_exception=True)
     def get_row(self, table: str, row_key: str) -> dict:
         """
         根据 row_key 从 table 中 取值，
@@ -274,6 +287,9 @@ if __name__ == "__main__":
 
         # put
         hc.put_row("YOUR_TABLE_NAME", "row_key_01", data)
+
+        # exist
+        print(hc.is_row_exist("YOUR_TABLE_NAME", "row_key_01"))
 
         # get
         row = hc.get_row("YOUR_TABLE_NAME", "row_key_01")
